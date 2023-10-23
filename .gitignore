@@ -1,2 +1,4 @@
 node_modules
 package-lock*
+library-site/.next/trace
+
