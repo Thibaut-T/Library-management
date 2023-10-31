@@ -16,7 +16,6 @@ export const useListBooks = (): UseListBooksProvider => {
       .then((data) => setBooks(data.data))
       .catch((err) => console.error(err));
   };
-
   return { books, load: fetchBooks };
 };
 

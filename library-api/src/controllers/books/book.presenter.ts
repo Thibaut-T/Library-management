@@ -13,10 +13,11 @@ export class PlainBookPresenter {
   author: PlainAuthorPresenter;
 
   genres: string[];
-
+  
   private constructor(data: PlainBookPresenter) {
     Object.assign(this, data);
   }
+
 
   public static from(data: PlainBookModel): PlainBookPresenter {
     return new PlainBookPresenter({

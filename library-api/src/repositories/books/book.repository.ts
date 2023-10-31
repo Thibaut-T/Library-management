@@ -23,7 +23,7 @@ export class BookRepository extends Repository<Book> {
    */
   public async getAllPlain(): Promise<PlainBookRepositoryOutput[]> {
     const books = await this.find({
-      relations: { bookGenres: { genre: true } },
+      relations: { bookGenres: { genre: true }, author: true },
     });
 
     return books.map(adaptBookEntityToPlainBookModel);
