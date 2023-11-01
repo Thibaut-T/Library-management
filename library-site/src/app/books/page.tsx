@@ -1,19 +1,27 @@
 'use client';
-
 import { FC, ReactElement, useEffect, useState } from 'react';
-import { useBooksProviders } from '@/hooks';
-import { useSortByName, useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv} from '@/utils/sortingFunctions';
+import { useBooksProviders, useGenresProviders } from '@/hooks';
+import { useSortByName, useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv, useSortByGenre} from '@/utils/sortingFunctions';
+
 
 const BooksPage: FC = (): ReactElement => {
   const { useListBooks } = useBooksProviders();
-  var { books, load } = useListBooks();
+  const { books, load: loadBooks } = useListBooks();
+ 
+  const { useListGenres } = useGenresProviders();
+  const { genres, load: loadGenres } = useListGenres();
 
-  //create a modal to add a book
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
-
-  const [sortedBooks, setSortedBooks] = useState(books);
   
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [sortedBooks, setSortedBooks] = useState(books);
+
+  const handleSortByGenre = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const genre = event.target.value;
+    setSortedBooks(useSortByGenre([...books], genre));
+  };
+
   const handleSortByName = () => {
     setSortedBooks(useSortByName([...books]));
   };
@@ -37,15 +45,19 @@ const BooksPage: FC = (): ReactElement => {
   const handleSortByDateInv = () => {
     setSortedBooks(useSortByDateInv([...books]));
   };
-
+ 
   const handleAddBook = () => {
     //add book
   }
-  
-  useEffect(() => load, []);
+  useEffect(() => {
+    loadBooks();
+    loadGenres();
+  }, []);
+
   useEffect(() => {
     handleSortByName();
   }, [books]);
+
   return (
     <>
       <div className="inline-flex">
@@ -55,6 +67,14 @@ const BooksPage: FC = (): ReactElement => {
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={handleSortByAuthorInv}>Sort by Author (Z-A)</button>
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={handleSortByDate}>Sort by Date (Oldest first)</button>
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={handleSortByDateInv}>Sort by Date (Newest first)</button>
+        <select name="genre" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onChange={handleSortByGenre}>
+          <option value="">Select an option</option>
+            {genres.map((genre) => (
+              <option key={genre.name} value={genre.name}>
+                {genre.name}
+              </option>
+            ))}
+        </select>
         <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4" onClick={toggle}>Add Book</button>
       </div>
       {modal &&
@@ -79,21 +99,20 @@ const BooksPage: FC = (): ReactElement => {
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-12">
-                    <div className="border-b border-gray-900/10 pb-12">
-                      <form onSubmit={handleAddBook}>
-                      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                          <div className="sm:col-span-4">
-                            <label className="block text-sm font-medium leading-6 text-gray-900">
-                                Name
-                            </label>
-                            <div className="mt-2">
-                              <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                                <input type="text" name="name" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Name" />
-                              </div>
+                  <div className=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <form onSubmit={handleAddBook}>
+                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div className="sm:col-span-4">
+                          <label className="block text-sm font-medium leading-6 text-gray-900">
+                              Name
+                          </label>
+                          <div className="mt-2">
+                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                              <input type="text" name="name" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Name" />
                             </div>
                           </div>
-                      </div> 
+                        </div>
+                      </div>
                       <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
                           <label className="block text-sm font-medium leading-6 text-gray-900">
@@ -113,9 +132,12 @@ const BooksPage: FC = (): ReactElement => {
                           </label>
                           <div className="mt-2">
                             <select name="genre" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                              <option>Fantasy</option>
-                              <option>Romance</option>
-                              <option>Science-Fiction</option>
+                            <option value="">Select an option</option>
+                            {genres.map((genre) => (
+                              <option key={genre.name} value={genre.name}>
+                                {genre.name}
+                              </option>
+                            ))}
                             </select>
                           </div>
                         </div>
@@ -125,7 +147,6 @@ const BooksPage: FC = (): ReactElement => {
                         <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" onClick={toggle}>Cancel</button>
                       </div>
                     </form>
-                  </div>
                 </div>
               </div>
             </div>

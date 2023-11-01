@@ -1,12 +1,13 @@
-import { useBooksProviders } from '@/hooks';
 import { PlainBookModel } from '@/models';
+
+/* This file contains functions for sorting books by name, author, date, and genre. */
 
 export function parseDate(dateString: string): Date {
     const [day, month, year] = dateString.split('/').map(Number);
     return new Date(year, month - 1, day); // Month is 0-based in JavaScript Date object
   }
 
-//export a function for sorting books by name
+
 export function useSortByName(books: PlainBookModel[]) {
     return books.sort((a, b) => {
     if (a.name < b.name) return -1;
@@ -22,7 +23,7 @@ export function useSortByNameInv(books: PlainBookModel[]) {
     });
 }
 
-//export a function for sorting books by author
+
 export function useSortByAuthor(books: PlainBookModel[]) {
     return books.sort((a, b) => {
         if (a.author.lastName < b.author.lastName) return -1;
@@ -38,7 +39,7 @@ export function useSortByAuthorInv(books: PlainBookModel[]) {
     });
 }
 
-//export a function for sorting books by date
+
 export function useSortByDate(books: PlainBookModel[]) {
     return books.sort((a, b) => {
       const dateA = parseDate(a.writtenOn.toString());
@@ -53,4 +54,10 @@ export function useSortByDateInv(books: PlainBookModel[]) {
       const dateB = parseDate(b.writtenOn.toString());
       return dateB.getTime() - dateA.getTime();
     });
+}
+
+export function useSortByGenre(books: PlainBookModel[], genre: any) {
+    return genre
+    ? useSortByName(books.filter((book) => book.genres.includes(genre)))
+    : books;
 }

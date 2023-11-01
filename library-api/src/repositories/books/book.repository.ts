@@ -25,7 +25,6 @@ export class BookRepository extends Repository<Book> {
     const books = await this.find({
       relations: { bookGenres: { genre: true }, author: true },
     });
-
     return books.map(adaptBookEntityToPlainBookModel);
   }
 

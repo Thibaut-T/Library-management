@@ -13,7 +13,7 @@ export class BookController {
   @Get('/')
   public async getAll(): Promise<PlainBookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
-
+    
     return books.map(PlainBookPresenter.from);
   }
 
