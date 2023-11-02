@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import {
   BookPresenter,
   PlainBookPresenter,
@@ -16,6 +16,8 @@ export class BookController {
     
     return books.map(PlainBookPresenter.from);
   }
+  
+
 
   @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
@@ -23,4 +25,11 @@ export class BookController {
 
     return BookPresenter.from(book);
   }
+/*
+  @Post('/addBook')
+  public async addBook(@Body() CreateBookPresenter: CreateBookPresenter): Promise<void> {
+    // Call your bookUseCases method to add the book to the database
+    await this.bookUseCases.addBook(CreateBookPresenter);
+  }
+*/
 }
