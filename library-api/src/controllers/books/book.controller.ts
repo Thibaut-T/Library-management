@@ -4,6 +4,7 @@ import {
   PlainBookPresenter,
 } from 'library-api/src/controllers/books/book.presenter';
 import { BookId } from 'library-api/src/entities';
+import { bookToAdd } from 'library-api/src/models';
 import { BookUseCases } from 'library-api/src/useCases';
 
 @Controller('books')
@@ -13,11 +14,8 @@ export class BookController {
   @Get('/')
   public async getAll(): Promise<PlainBookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
-    
     return books.map(PlainBookPresenter.from);
   }
-  
-
 
   @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
@@ -25,11 +23,11 @@ export class BookController {
 
     return BookPresenter.from(book);
   }
-/*
-  @Post('/addBook')
-  public async addBook(@Body() CreateBookPresenter: CreateBookPresenter): Promise<void> {
+  
+  @Post('/')
+  public async addBook(@Body() newBook: bookToAdd): Promise<BookPresenter> {
     // Call your bookUseCases method to add the book to the database
-    await this.bookUseCases.addBook(CreateBookPresenter);
+    const book = await this.bookUseCases.addBook(newBook);
+    return BookPresenter.from(book);
   }
-*/
 }

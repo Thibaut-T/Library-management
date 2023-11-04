@@ -1,7 +1,8 @@
 'use client';
 import { FC, ReactElement, useEffect, useState } from 'react';
-import { useBooksProviders, useGenresProviders } from '@/hooks';
+import { useBooksProviders, useGenresProviders, useAddBookProviders } from '@/hooks';
 import { useSortByName, useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv, useSortByGenre} from '@/utils/sortingFunctions';
+import { set } from 'date-fns';
 
 
 const BooksPage: FC = (): ReactElement => {
@@ -11,12 +12,16 @@ const BooksPage: FC = (): ReactElement => {
   const { useListGenres } = useGenresProviders();
   const { genres, load: loadGenres } = useListGenres();
 
+  const { useAddBook } = useAddBookProviders();
+  const { book: newBook, addBook } = useAddBook();
+
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
   
   const [selectedGenre, setSelectedGenre] = useState('');
   const [sortedBooks, setSortedBooks] = useState(books);
-
+  
+  
   const handleSortByGenre = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const genre = event.target.value;
     setSortedBooks(useSortByGenre([...books], genre));
@@ -46,9 +51,18 @@ const BooksPage: FC = (): ReactElement => {
     setSortedBooks(useSortByDateInv([...books]));
   };
  
-  const handleAddBook = () => {
-    //add book
-  }
+  const handleAddBook = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    newBook.name = "Le second Test"
+    newBook.writtenOn = new Date()
+    newBook.author = "Paul Marliot"
+    newBook.genres = ["Fantasy"]
+    addBook(newBook).then(() => {
+      loadBooks();
+      toggle();
+    });
+  };
+
   useEffect(() => {
     loadBooks();
     loadGenres();
@@ -128,17 +142,27 @@ const BooksPage: FC = (): ReactElement => {
                       <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
                           <label className="block text-sm font-medium leading-6 text-gray-900">
+                              Written on
+                          </label>
+                          <div className="mt-2">
+                            <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
+                              <input type="date" name="writtenOn" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="writtenOn" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                        <div className="sm:col-span-4">
+                          <label className="block text-sm font-medium leading-6 text-gray-900">
                             Genre
                           </label>
                           <div className="mt-2">
-                            <select name="genre" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                            <option value="">Select an option</option>
                             {genres.map((genre) => (
-                              <option key={genre.name} value={genre.name}>
-                                {genre.name}
-                              </option>
+                            <div key={genre.name} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                              <input type="checkbox" key={genre.name} value={genre.name}/>
+                              <label htmlFor={genre.name} className="ml-2">{genre.name}</label>
+                            </div>
                             ))}
-                            </select>
                           </div>
                         </div>
                       </div>
@@ -160,11 +184,11 @@ const BooksPage: FC = (): ReactElement => {
         <div className="px-6 py-4">
           <div className="font-bold text-xl mb-2">{book.name}</div>
           <p className="text-gray-700 text-base">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.
+            Super livre franchement lisez le.
           </p>
         </div>
         <div className="px-6 pt-4 pb-2">
-          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.author.lastName}</span>
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.author.firstName} {book.author.lastName} </span>
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.genres}</span>
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.writtenOn.toString()}</span>
         </div>

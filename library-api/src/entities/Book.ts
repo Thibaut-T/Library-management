@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { BookGenre } from './BookGenre';
-import { Author } from './Author';
+import { Author, AuthorId } from './Author';
 
 export type BookId = string & { __brand: 'Book' };
 

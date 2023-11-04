@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { BookPresenter } from 'library-api/src/controllers/books/book.presenter';
 import { BookId } from 'library-api/src/entities';
-import { BookRepository } from 'library-api/src/repositories';
+import { bookToAdd, AuthorModel} from 'library-api/src/models';
+import { BookRepository, AuthorRepository } from 'library-api/src/repositories';
+import { AuthorUseCases } from 'library-api/src/useCases/authors/author.useCases';
 import {
   BookUseCasesOutput,
   PlainBookUseCasesOutput,
@@ -8,7 +11,9 @@ import {
 
 @Injectable()
 export class BookUseCases {
-  constructor(private readonly bookRepository: BookRepository) {}
+  constructor(
+    private readonly bookRepository: BookRepository,
+    private readonly authorRepository: AuthorRepository) {}
 
   /**
    * Get all plain books
@@ -26,5 +31,24 @@ export class BookUseCases {
    */
   public async getById(id: BookId): Promise<BookUseCasesOutput> {
     return this.bookRepository.getById(id);
+  }
+
+  /**
+   * Add a book to the database
+   * @param data Book's data
+   * @returns Book's ID
+   * @throws 400: book's data is invalid
+   */
+  public async addBook(newBook: bookToAdd): Promise<BookUseCasesOutput> {
+    if (!newBook.name) {
+      throw new Error('Book name is required');
+    }
+    if (!newBook.author) {
+      throw new Error('Book author is required');
+    }
+    console.log("book received: ", newBook);
+    const author = await this.authorRepository.addAuthor(newBook.author);
+    console.log("author: ", author);
+    return this.bookRepository.createBook(newBook, author);
   }
 }
