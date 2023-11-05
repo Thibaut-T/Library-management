@@ -63,4 +63,14 @@ export class BookUseCases {
     const bookModified = await this.bookGenreRepository.createBookGenre(bookToModify, newBook.genreId);
     return book;
   }
+
+  /**
+   * Delete a book from the database
+   * @param id Book's ID
+   * @returns Book's ID
+   * @throws 404: book with this ID was not found
+   */
+  public async deleteBook(id: BookId): Promise<BookUseCasesOutput> {
+    return this.bookRepository.deleteBook(id);
+  }
 }

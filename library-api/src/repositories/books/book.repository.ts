@@ -108,4 +108,23 @@ export class BookRepository extends Repository<Book> {
     const updatedBook = await this.save({ ...book, ...data });
     return updatedBook.id;
   }
+
+  /**
+   * Delete a book from the database
+   * @param id Book's ID
+   * @returns Book's ID
+   * @throws 404: book with this ID was not found
+   */
+  public async deleteBook(id: BookId): Promise<BookRepositoryOutput> {
+    console.log("deleting book: ", id);
+    const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true }});
+
+    if (!book) {
+      throw new NotFoundError(`Book - '${id}'`);
+    }
+    console.log("book to delete: ", book);
+    const deletedBook = adaptBookEntityToBookModel(book)
+    await this.remove(book);
+    return deletedBook ;
+  }
 }

@@ -63,3 +63,31 @@ type AddBookProviders = {
 export const useAddBookProviders = (): AddBookProviders => ({
   useAddBook,
 });
+
+type UseDeleteBookProvider = {
+  deleteBook: (id: string) => Promise<any>;
+};
+
+export const useDeleteBook = (): UseDeleteBookProvider => {
+  const deleteBook = (id: string): Promise<any> => {
+    return axios
+      .delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`)
+      .then((data) => {
+        console.log('Book deleted:', data.data)
+        return(data.data);
+      })
+      .catch((err) => {
+        console.error(err);
+        throw err; 
+      })
+  }
+  return { deleteBook }; 
+}
+
+type DeleteBookProviders = {
+  useDeleteBook: () => UseDeleteBookProvider;
+};
+
+export const useDeleteBookProviders = (): DeleteBookProviders => ({
+  useDeleteBook,
+});
