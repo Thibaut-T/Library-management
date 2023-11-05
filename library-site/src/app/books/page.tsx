@@ -1,8 +1,8 @@
 'use client';
 import { FC, ReactElement, useEffect, useState} from 'react';
 import { useBooksProviders, useGenresProviders, useAddBookProviders, useDeleteBookProviders } from '@/hooks';
-import { useSortByName, useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv, useSortByGenre} from '@/utils/sortingFunctions';
-import { set } from 'date-fns';
+import { useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv, useSortByGenre} from '@/utils/sortingFunctions';
+import { PlainBookModel } from '@/models';
 
 
 
@@ -38,12 +38,18 @@ const BooksPage: FC = (): ReactElement => {
   }
 
   const [sortedBooks, setSortedBooks] = useState(books);
+  const [searchQuery, setSearchQuery] = useState('');
   
   /*Form element declaration*/
   const [name, setName] = useState('');
   const [author, setAuthor] = useState('');
   const [writtenOn, setWrittenOn] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
+
+  const useSortByName = (books: PlainBookModel[]): PlainBookModel[] => {
+    return books.filter(book => book.name.toLowerCase().includes(searchQuery.toLowerCase()))
+               .sort((a, b) => a.name.localeCompare(b.name));
+  };
 
   const handleSortByGenre = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const genre = event.target.value;
@@ -93,7 +99,7 @@ const BooksPage: FC = (): ReactElement => {
 
   useEffect(() => {
     handleSortByName();
-  }, [books]);
+  }, [books, searchQuery]);
   
   return (
     <>
@@ -112,6 +118,19 @@ const BooksPage: FC = (): ReactElement => {
               </option>
             ))}
         </select>
+        <div className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">
+          <label className="block text-sm leading-5 text-gray-800 font-bold">
+            Search by Name
+          </label>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <input
+              className="bg-gray-200 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              placeholder="Enter book name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
         <button className="bg-blue-300 hover:bg-blue-400 text-gray-800 font-bold py-2 px-4" onClick={toggle}>Add Book</button>
       </div>
       {modal &&
