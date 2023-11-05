@@ -1,4 +1,5 @@
 import { PlainAuthorModel } from "./author.model";
+import { GenreModel } from "./genre.model";
 
 export type PlainBookModel = {
   id: string;
@@ -12,5 +13,5 @@ export type bookToAdd = {
   name : string;
   writtenOn : Date;
   author : string;
-  genres : string[];
+  genreId : string;
 }

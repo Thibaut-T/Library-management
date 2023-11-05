@@ -1,4 +1,4 @@
-import { PlainAuthorModel, PlainBookModel, bookToAdd } from "@/models";
+import { PlainAuthorModel, PlainBookModel, bookToAdd, GenreModel } from "@/models";
 
 //function to adapat the data from the site to the data from the api
 export function adaptToPlainBook(data: bookToAdd) {
@@ -18,4 +18,12 @@ export function adaptToPlainAuthor(data: string) {
         Lastname: data.split(" ")[1],
     };
     return adaptedData;
+}
+
+export function adaptToGenreModel(data: string[]): GenreModel[] {
+    const returnData = data.map((adaptedData) => ({
+      id: adaptedData.split("+")[0],
+      name: adaptedData.split("+")[1],
+    }));
+    return returnData;
 }

@@ -38,7 +38,7 @@ export const useAddBook = (): UseAddBookProvider => {
     name: '',
     writtenOn: new Date(),
     author: '',
-    genres: [],
+    genreId: '',
   });
   const addBook = (bookData: bookToAdd): Promise<any> => {
     console.log(bookData)

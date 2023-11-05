@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BookPresenter } from 'library-api/src/controllers/books/book.presenter';
 import { BookId } from 'library-api/src/entities';
 import { bookToAdd, AuthorModel} from 'library-api/src/models';
-import { BookRepository, AuthorRepository } from 'library-api/src/repositories';
+import { BookRepository, AuthorRepository, BookGenreRepository } from 'library-api/src/repositories';
 import { AuthorUseCases } from 'library-api/src/useCases/authors/author.useCases';
 import {
   BookUseCasesOutput,
@@ -13,7 +13,9 @@ import {
 export class BookUseCases {
   constructor(
     private readonly bookRepository: BookRepository,
-    private readonly authorRepository: AuthorRepository) {}
+    private readonly authorRepository: AuthorRepository,
+    private readonly bookGenreRepository: BookGenreRepository,
+    ) {}
 
   /**
    * Get all plain books
@@ -40,15 +42,25 @@ export class BookUseCases {
    * @throws 400: book's data is invalid
    */
   public async addBook(newBook: bookToAdd): Promise<BookUseCasesOutput> {
+    console.log("book received: ", newBook);
     if (!newBook.name) {
       throw new Error('Book name is required');
     }
     if (!newBook.author) {
       throw new Error('Book author is required');
     }
-    console.log("book received: ", newBook);
+    if(!newBook.writtenOn) {
+      newBook.writtenOn = new Date();
+    }
+    if(!newBook.genreId) {
+      throw new Error('Book genre is required');
+    }
+    //console.log("book received: ", newBook);
     const author = await this.authorRepository.addAuthor(newBook.author);
-    console.log("author: ", author);
-    return this.bookRepository.createBook(newBook, author);
+    //console.log("author: ", author);
+    const book = await this.bookRepository.createBook(newBook, author);
+    const bookToModify = await this.bookRepository.getBookTypeById(book.id);
+    const bookModified = await this.bookGenreRepository.createBookGenre(bookToModify, newBook.genreId);
+    return book;
   }
 }

@@ -33,7 +33,6 @@ export const createBookUtils = (
   book.name = newBook.name;
   book.author = author as Author;
   (newBook.writtenOn) ? book.writtenOn = newBook.writtenOn : book.writtenOn = new Date();
-  console.log("book date: ", book.writtenOn);
   book.bookGenres = [];
   return Promise.resolve(adaptBookEntityToBookModel(book));
 };

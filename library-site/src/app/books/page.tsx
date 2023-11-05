@@ -3,6 +3,8 @@ import { FC, ReactElement, useEffect, useState } from 'react';
 import { useBooksProviders, useGenresProviders, useAddBookProviders } from '@/hooks';
 import { useSortByName, useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv, useSortByGenre} from '@/utils/sortingFunctions';
 import { set } from 'date-fns';
+import { adaptToGenreModel } from '@/utils/convertingFunctions';
+import { GenreModel } from '@/models';
 
 
 const BooksPage: FC = (): ReactElement => {
@@ -18,10 +20,15 @@ const BooksPage: FC = (): ReactElement => {
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
   
-  const [selectedGenre, setSelectedGenre] = useState('');
   const [sortedBooks, setSortedBooks] = useState(books);
   
   
+  /*Form element declaration*/
+  const [name, setName] = useState('');
+  const [author, setAuthor] = useState('');
+  const [writtenOn, setWrittenOn] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('');
+
   const handleSortByGenre = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const genre = event.target.value;
     setSortedBooks(useSortByGenre([...books], genre));
@@ -53,10 +60,10 @@ const BooksPage: FC = (): ReactElement => {
  
   const handleAddBook = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    newBook.name = "Le second Test"
-    newBook.writtenOn = new Date()
-    newBook.author = "Paul Marliot"
-    newBook.genres = ["Fantasy"]
+    newBook.name = name;
+    newBook.writtenOn = new Date(writtenOn);
+    newBook.author = author;
+    newBook.genreId = selectedGenre;
     addBook(newBook).then(() => {
       loadBooks();
       toggle();
@@ -71,7 +78,7 @@ const BooksPage: FC = (): ReactElement => {
   useEffect(() => {
     handleSortByName();
   }, [books]);
-
+  
   return (
     <>
       <div className="inline-flex">
@@ -114,6 +121,7 @@ const BooksPage: FC = (): ReactElement => {
                     </div>
                   </div>
                   <div className=" px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    {/*       Add a book form start here      */ }
                     <form onSubmit={handleAddBook}>
                     <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                         <div className="sm:col-span-4">
@@ -122,7 +130,14 @@ const BooksPage: FC = (): ReactElement => {
                           </label>
                           <div className="mt-2">
                             <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                              <input type="text" name="name" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Name" />
+                              <input 
+                                type="text" 
+                                name="name" 
+                                className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" 
+                                value={name} 
+                                onChange={(e) => setName(e.target.value)} 
+                                placeholder="Name" 
+                              />
                             </div>
                           </div>
                         </div>
@@ -134,7 +149,14 @@ const BooksPage: FC = (): ReactElement => {
                           </label>
                           <div className="mt-2">
                             <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                              <input type="text" name="author" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="Author" />
+                              <input 
+                                type="text" 
+                                name="author" 
+                                className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" 
+                                value={author} 
+                                onChange={(e) => setAuthor(e.target.value)} 
+                                placeholder="Author" 
+                              />
                             </div>
                           </div>
                         </div>
@@ -146,7 +168,14 @@ const BooksPage: FC = (): ReactElement => {
                           </label>
                           <div className="mt-2">
                             <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                              <input type="date" name="writtenOn" className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" placeholder="writtenOn" />
+                              <input 
+                                type="date" 
+                                name="writtenOn" 
+                                className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" 
+                                value={writtenOn} 
+                                onChange={(e) => setWrittenOn(e.target.value)} 
+                                placeholder="writtenOn" 
+                              />
                             </div>
                           </div>
                         </div>
@@ -157,12 +186,17 @@ const BooksPage: FC = (): ReactElement => {
                             Genre
                           </label>
                           <div className="mt-2">
-                            {genres.map((genre) => (
-                            <div key={genre.name} className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                              <input type="checkbox" key={genre.name} value={genre.name}/>
-                              <label htmlFor={genre.name} className="ml-2">{genre.name}</label>
-                            </div>
-                            ))}
+                            <select 
+                              value={selectedGenre} 
+                              onChange={(e) => setSelectedGenre(e.target.value)}
+                              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                              <option value="">Select Genre</option>
+                              {genres.map((genre) => (
+                                <option key={genre.id} value={genre.id}>
+                                  {genre.name}
+                                </option>
+                              ))}
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -190,7 +224,7 @@ const BooksPage: FC = (): ReactElement => {
         <div className="px-6 pt-4 pb-2">
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.author.firstName} {book.author.lastName} </span>
           <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.genres}</span>
-          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.writtenOn.toString()}</span>
+          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{new Date(book.writtenOn).toLocaleDateString('fr-FR')}</span>
         </div>
         </div>
       ))}

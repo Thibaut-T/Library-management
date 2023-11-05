@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { BaseEntity, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Genre } from './Genre';
 import { Book } from './Book';
 
@@ -7,7 +7,7 @@ export type BookGenreId = string & { __brand: 'BookGenre' };
 
 @Entity('BookGenres')
 export class BookGenre extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: BookGenreId;
 
   @ManyToOne(() => Book, (book) => book.bookGenres, {
