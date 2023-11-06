@@ -12,5 +12,5 @@ export type AuthorModel = {
   firstName: string;
   lastName: string;
   photuUrl?: string;
-  books: Book[];
+  books?: Book[];
 };

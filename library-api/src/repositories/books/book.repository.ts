@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundError, BadRequestError } from 'library-api/src/common/errors';
 import { Book, BookId} from 'library-api/src/entities';
-import { bookToAdd, AuthorModel} from 'library-api/src/models';
+import { bookToAdd, AuthorModel, PlainAuthorModel} from 'library-api/src/models';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,

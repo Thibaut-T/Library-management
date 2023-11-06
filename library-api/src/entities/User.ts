@@ -4,9 +4,8 @@ import{
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
-  PrimaryColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Book }  from './Book';
@@ -17,14 +16,14 @@ export type UserId = string & { __brand: 'User'};
 
 @Entity('Users')
 export class User extends BaseEntity {
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: UserId;
 
   @Column()
   username: string;
 
-  @OneToMany(type => Book, book => book.usersFavorite)
-  favoriteBook: Book[];
+  @ManyToOne(type => Book, book => book.usersFavorite)
+  favoriteBook: Book;
 
   @ManyToMany(type => Book, book => book.owners)
   @JoinTable()
