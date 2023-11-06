@@ -1,6 +1,6 @@
 'use client';
 import { FC, ReactElement, useEffect, useState } from 'react';
-import { useUserProviders, useGetUserProvider, useCreateUserProvider} from '@/hooks';
+import { useUserProviders, useGetUserProvider, useCreateUserProvider, useDeleteUserProvider} from '@/hooks';
 
 const UsersPage: FC = (): ReactElement => {
 
@@ -13,6 +13,8 @@ const { user, load: loadUser} = useGetUser();
 const { useCreateUser } = useCreateUserProvider();
 const { user: newUser, load: addUser } = useCreateUser();
 
+const { useDeleteUser } = useDeleteUserProvider();
+const { deleteUser } = useDeleteUser();
 const Thomas = {
     username: "Thomas",
     id: "none",
@@ -47,6 +49,9 @@ return <>
         </div>
         <div>
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={() => addUser(Thomas)}>Add Thomas</button>
+        </div>
+        <div>
+        <button className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button" onClick={() => deleteUser("2")}>Delete Thib</button>
         </div>
     </div>
 </>;

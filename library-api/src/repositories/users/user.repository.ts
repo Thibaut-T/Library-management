@@ -3,6 +3,7 @@ import { User, UserId } from 'library-api/src/entities';
 import { UserModel, PlainUserModel } from 'library-api/src/models';
 import { DataSource, Repository } from 'typeorm';
 import { adaptUserEntityToPlainUserModel } from 'library-api/src/repositories/users/user.utils';
+import { de } from 'date-fns/locale';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -45,4 +46,22 @@ export class UserRepository extends Repository<User> {
         })
         return adaptUserEntityToPlainUserModel(addedUser);
     }
+
+    /**
+     * Delete a user
+     * @param id The user id
+     */
+    public async deleteUser(id: UserId): Promise<PlainUserModel> {
+        const user = await this.findOne({ where: { id },
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        if(!user) {
+            throw new Error("User not found");
+        }
+        console.log("User to delete: ", user)
+        const deletedUser = adaptUserEntityToPlainUserModel(user);
+        await this.remove(user);
+        return deletedUser;
+        //LES AMIS BLOQUENT LA SUPPRESSION DE L'UTILISATEUR (FOREIGN KEY)
+    };
 };

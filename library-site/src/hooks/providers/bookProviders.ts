@@ -30,7 +30,7 @@ export const useBooksProviders = (): BookProviders => ({
 
 type UseAddBookProvider = {
   book: bookToAdd;
-  addBook: (bookData: bookToAdd) => void;
+  addBook: (bookData: bookToAdd) => Promise<PlainBookModel>;
 };
 
 export const useAddBook = (): UseAddBookProvider => {
@@ -40,18 +40,18 @@ export const useAddBook = (): UseAddBookProvider => {
     author: '',
     genreId: '',
   });
-  const addBook = (bookData: bookToAdd): void => {
+  const addBook = (bookData: bookToAdd): Promise<PlainBookModel> => {
     console.log(bookData)
-    axios
-      .post(`${process.env.NEXT_PUBLIC_API_URL}/books/`, bookData)
-      .then((data) => {
-        console.log('Book added:', data.data)
-        return(data.data);
-      })
-      .catch((err) => {
-        console.error(err);
-        throw err; 
-      })
+    return axios
+        .post(`${process.env.NEXT_PUBLIC_API_URL}/books/`, bookData)
+        .then((data) => {
+          console.log('Book added:', data.data)
+          return(data.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          throw err; 
+        })
   }
   return { book, addBook }; 
 } 
@@ -65,21 +65,21 @@ export const useAddBookProviders = (): AddBookProviders => ({
 });
 
 type UseDeleteBookProvider = {
-  deleteBook: (id: string) => Promise<any>;
+  deleteBook: (id: string) => Promise<string>;
 };
 
 export const useDeleteBook = (): UseDeleteBookProvider => {
-  const deleteBook = (id: string): Promise<any> => {
+  const deleteBook = (id: string): Promise<string> => {
     return axios
-      .delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`)
-      .then((data) => {
-        console.log('Book deleted:', data.data)
-        return(data.data);
-      })
-      .catch((err) => {
-        console.error(err);
-        throw err; 
-      })
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`)
+        .then((data) => {
+          console.log('Book deleted:', data.data)
+          return(data.data);
+        })
+        .catch((err) => {
+          console.error(err);
+          return Promise.reject(err.message); 
+        })
   }
   return { deleteBook }; 
 }

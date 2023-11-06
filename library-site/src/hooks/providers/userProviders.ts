@@ -97,3 +97,33 @@ type CreateUserProvider = {
 export const useCreateUserProvider = (): CreateUserProvider => ({
     useCreateUser,
 });
+
+//Provider for deleting a user
+
+type UseDeleteUserProvider = {
+    deleteUser: (id: string) => Promise<string>;
+};
+
+export const useDeleteUser = (): UseDeleteUserProvider => {
+    const deleteUser = (id: string): Promise<string> => {
+        return axios
+            .delete(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`)
+            .then((data) => {
+                console.log('User deleted:', data.data)
+                return(data.data);
+            })
+            .catch((err) => {
+                console.error(err);
+                return Promise.reject(err.message); 
+            })
+    }
+    return { deleteUser };
+}
+
+type DeleteUserProvider = {
+    useDeleteUser: () => UseDeleteUserProvider;
+};
+
+export const useDeleteUserProvider = (): DeleteUserProvider => ({
+    useDeleteUser,
+});

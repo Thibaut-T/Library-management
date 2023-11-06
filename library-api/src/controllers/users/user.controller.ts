@@ -25,4 +25,11 @@ export class UserController {
         const newUser = await this.userUseCases.createUser(user);
         return newUser;
     }
+
+    @Delete('/:id')
+    public async delete(@Param('id') id: UserId): Promise<PlainUserModel> {
+        console.log("User to delete: ", id)
+        const user = await this.userUseCases.deleteUser(id);
+        return user;
+    }
 }
