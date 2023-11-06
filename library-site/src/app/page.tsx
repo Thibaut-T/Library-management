@@ -13,9 +13,7 @@ const Home: FC = (): ReactElement => (
 
   <BrowserRouter >
       <Routes>
-        <Route path="/"  /> 
-        <Route path="/users" Component={ProfilePage} />
-        <Route path="/users/:id" Component={profilPageID} />
+       
       </Routes>
     </BrowserRouter>
   <div className="h-screen bg-cover bg-center" style={{ backgroundImage: "url('https://source.unsplash.com/random')" }}>
