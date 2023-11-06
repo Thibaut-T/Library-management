@@ -16,4 +16,11 @@ export class UserUseCases {
         return this.userRepository.getAllUsers();
     };
 
+    public async getUserById(id: UserId): Promise<PlainUserModel> {
+        return this.userRepository.getUserById(id);
+    }
+
+    public async createUser(user: UserModel): Promise<PlainUserModel> {
+        return this.userRepository.createUser(user);
+    }
 };

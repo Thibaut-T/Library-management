@@ -20,4 +20,29 @@ export class UserRepository extends Repository<User> {
         return users.map(adaptUserEntityToPlainUserModel);
     };
 
+    /**
+     * Get a user by its id
+     * @param id The user id
+     */
+    public async getUserById(id: UserId): Promise<PlainUserModel> {
+        const user = await this.findOne({ where: { id },
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        return adaptUserEntityToPlainUserModel(user);
+    };
+
+    /**
+     * Create a new user
+     * @param user The user to create
+     */
+    public async createUser(user: UserModel): Promise<PlainUserModel> {
+        const newUser = new User();
+        newUser.username = user.username;
+        await this.save(newUser);
+        const addedUser = await this.findOne({ 
+            where: { username: newUser.username},
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        })
+        return adaptUserEntityToPlainUserModel(addedUser);
+    }
 };

@@ -30,7 +30,7 @@ export const useBooksProviders = (): BookProviders => ({
 
 type UseAddBookProvider = {
   book: bookToAdd;
-  addBook: (bookData: bookToAdd) => Promise<any>;
+  addBook: (bookData: bookToAdd) => void;
 };
 
 export const useAddBook = (): UseAddBookProvider => {
@@ -40,9 +40,9 @@ export const useAddBook = (): UseAddBookProvider => {
     author: '',
     genreId: '',
   });
-  const addBook = (bookData: bookToAdd): Promise<any> => {
+  const addBook = (bookData: bookToAdd): void => {
     console.log(bookData)
-    return axios
+    axios
       .post(`${process.env.NEXT_PUBLIC_API_URL}/books/`, bookData)
       .then((data) => {
         console.log('Book added:', data.data)
