@@ -4,8 +4,9 @@ import { BookRepository } from 'library-api/src/repositories/books/book.reposito
 import { GenreRepository } from 'library-api/src/repositories/genres/genre.repository';
 import { BookGenreRepository } from 'library-api/src/repositories/bookGenres/bookGenre.repository';
 import { UserRepository } from 'library-api/src/repositories/users/user.repository';
+import { CommentRepository } from 'library-api/src/repositories/comments/comment.repository';
 
-const repositories = [AuthorRepository, BookRepository, GenreRepository, BookGenreRepository, UserRepository];
+const repositories = [AuthorRepository, BookRepository, GenreRepository, BookGenreRepository, UserRepository, CommentRepository];
 
 @Module({
   providers: [...repositories],

@@ -117,7 +117,7 @@ export class BookRepository extends Repository<Book> {
    */
   public async deleteBook(id: BookId): Promise<BookRepositoryOutput> {
     console.log("deleting book: ", id);
-    const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true }});
+    const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true, owners: true }});
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);

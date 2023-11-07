@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User, UserId } from 'library-api/src/entities';
 import { UserModel, PlainUserModel } from 'library-api/src/models';
+import { CommentRepository } from 'library-api/src/repositories/comments/comment.repository';
 import { DataSource, Repository } from 'typeorm';
 import { adaptUserEntityToPlainUserModel } from 'library-api/src/repositories/users/user.utils';
-import { de } from 'date-fns/locale';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
-    constructor(public readonly dataSource: DataSource) {
+    constructor(public readonly dataSource: DataSource,
+        private readonly commentRepository: CommentRepository,) {
         super(User, dataSource.createEntityManager());
     }
 
@@ -59,9 +60,32 @@ export class UserRepository extends Repository<User> {
             throw new Error("User not found");
         }
         console.log("User to delete: ", user)
+        await Promise.all(user.friends.map(async (friend) => {
+            const byeFriend = await this.findOne({ where: { id: friend.id },
+                relations: { friends: true},
+            });
+            if (byeFriend && byeFriend.friends) {
+                // Remove the user from the friend's friends list
+                byeFriend.friends = byeFriend.friends.filter(f => f.id !== user.id);
+                await this.save(byeFriend);
+            }
+        }));
+        /*await Promise.all(user.comments.map(async (comment) => {
+            try {
+                // Remove the comment from the database
+                await this.commentRepository.remove(comment[]);
+            } catch (error) {
+                // Handle the error, e.g., log it or throw a custom exception
+                console.error(`Error deleting comment with id ${comment.id}: ${error.message}`);
+                throw new Error(`Failed to delete comment with id ${comment.id}`);
+            }
+        }));*/
+        user.ownedBooks = [];
+        user.favoriteBook = null;
+        user.favoriteGenres = [];
         const deletedUser = adaptUserEntityToPlainUserModel(user);
         await this.remove(user);
         return deletedUser;
-        //LES AMIS BLOQUENT LA SUPPRESSION DE L'UTILISATEUR (FOREIGN KEY)
+        //LES COMMS BLOQUENT LA SUPPRESSION DE L'UTILISATEUR (FOREIGN KEY)
     };
 };
