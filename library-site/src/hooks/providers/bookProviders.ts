@@ -65,13 +65,13 @@ export const useAddBookProviders = (): AddBookProviders => ({
 });
 
 type UseDeleteBookProvider = {
-  deleteBook: (id: string) => Promise<string>;
+  deleteBook: (id: string, userId: string) => Promise<string>;
 };
 
 export const useDeleteBook = (): UseDeleteBookProvider => {
-  const deleteBook = (id: string): Promise<string> => {
+  const deleteBook = (id: string, userId: string): Promise<string> => {
     return axios
-        .delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`)
+        .delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}/${id}`)
         .then((data) => {
           console.log('Book deleted:', data.data)
           return(data.data);
