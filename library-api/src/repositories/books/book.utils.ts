@@ -1,11 +1,11 @@
-import { Book, BookId, Author} from 'library-api/src/entities';
+import { Book, BookId, Author} from '../../entities';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,
-} from 'library-api/src/repositories/books/book.repository.type';
+} from '../../repositories/books/book.repository.type';
 
 
-import { bookToAdd, AuthorModel } from 'library-api/src/models';
+import { bookToAdd, AuthorModel } from '../../models';
 
 export function parseDate(dateString: string): Date {
   const [day, month, year] = dateString.split('/').map(Number);

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundError } from 'library-api/src/common/errors';
-import { Genre } from 'library-api/src/entities';
-import { GenreRepositoryOutput } from 'library-api/src/repositories/genres/genre.repository.type';
-import { adaptGenreEntityToGenreModel } from 'library-api/src/repositories/genres/genre.utils';
+import { NotFoundError } from '../../common/errors';
+import { Genre } from '../../entities';
+import { GenreRepositoryOutput } from '../../repositories/genres/genre.repository.type';
+import { adaptGenreEntityToGenreModel } from '../../repositories/genres/genre.utils';
 import { DataSource, Repository } from 'typeorm';
 
 

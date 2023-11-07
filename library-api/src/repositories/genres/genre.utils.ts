@@ -1,5 +1,5 @@
-import { Genre } from "library-api/src/entities";
-import { GenreRepositoryOutput } from 'library-api/src/repositories/genres/genre.repository.type';
+import { Genre } from "../../entities";
+import { GenreRepositoryOutput } from '../../repositories/genres/genre.repository.type';
 
 export const adaptGenreEntityToGenreModel = (
   genre: Genre,

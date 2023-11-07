@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundError, BadRequestError } from 'library-api/src/common/errors';
-import { Book, BookId} from 'library-api/src/entities';
-import { bookToAdd, AuthorModel} from 'library-api/src/models';
+import { NotFoundError, BadRequestError } from '../../common/errors';
+import { Book, BookId} from '../../entities';
+import { bookToAdd, AuthorModel} from '../../models';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,
-} from 'library-api/src/repositories/books/book.repository.type';
+} from '../../repositories/books/book.repository.type';
 import {
   adaptBookEntityToBookModel,
   adaptBookEntityToPlainBookModel,
   createBookUtils
-} from 'library-api/src/repositories/books/book.utils';
+} from '../../repositories/books/book.utils';
 
 import { DataSource, Repository } from 'typeorm';
 

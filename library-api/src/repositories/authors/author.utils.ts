@@ -1,6 +1,6 @@
-import { PlainAuthorPresenter } from "library-api/src/controllers/authors/author.presenter";
-import { AuthorModel } from "library-api/src/models"
-import { AuthorId, Author, Book} from 'library-api/src/entities';
+import { PlainAuthorPresenter } from "../../controllers/authors/author.presenter";
+import { AuthorModel } from "../../models"
+import { AuthorId, Author, Book} from '../../entities';
 
 function createAuthorId(id: string): AuthorId {
     return id as AuthorId;

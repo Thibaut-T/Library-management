@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { AuthorRepository } from 'library-api/src/repositories';
-import { AuthorModel } from "library-api/src/models"
-import { AuthorId } from 'library-api/src/entities';
+import { AuthorRepository } from '../../repositories';
+import { AuthorModel } from "../../models"
+import { AuthorId } from '../../entities';
 
 @Injectable()
 export class AuthorUseCases {

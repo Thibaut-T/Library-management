@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { GenreRepository } from 'library-api/src/repositories';
-import { GenreUseCasesOutput } from 'library-api/src/useCases/genres/genre.useCases.type';
+import { GenreRepository } from '../../repositories';
+import { GenreUseCasesOutput } from '../../useCases/genres/genre.useCases.type';
 
 @Injectable()
 export class GenreUseCases {
