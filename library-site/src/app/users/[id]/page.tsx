@@ -1,96 +1,14 @@
 "use client";
+import React from "react";
 import {
   JSXElementConstructor,
   Key,
-  PromiseLikeOfReactNode,
   ReactElement,
   ReactNode,
   ReactPortal,
   useState,
   FC,
 } from "react";
-
-/*
-swagger: '1.9'
-info:
-  version: 1.0.0
-  title: User Profile API
-  description: API for managing user profiles
-paths:
-  /user/{userId}:
-    get:
-      summary: Get user profile
-      description: Returns the user's profile information
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: integer
-      responses:
-        '200':
-          description: User profile information
-          schema:
-            $ref: '#/definitions/User'
-    put:
-      summary: Update user profile
-      description: Updates the user's profile information
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: integer
-        - in: body
-          name: user
-          description: The user's new profile information
-          schema:
-            $ref: '#/definitions/User'
-      responses:
-        '200':
-          description: User profile updated
-    delete:
-      summary: Delete user profile
-      description: Deletes the user's profile
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: integer
-      responses:
-        '204':
-          description: User profile deleted
-definitions:
-  User:
-    type: object
-    properties:
-      name:
-        type: string
-      surname:
-        type: string
-      email:
-        type: string
-      favoriteBooks:
-        type: array
-        items:
-          type: string
-      ownedBooks:
-        type: array
-        items:
-          type: string
-      favoriteGenre:
-        type: array
-        items:
-          type: string
-      friendList:
-        type: array
-        items:
-          type: string
-*/
-
-
-
-
-
-
 
 
 interface User {
@@ -180,7 +98,6 @@ const profilPageID: FC = () => {
                     | ReactElement<any, string | JSXElementConstructor<any>>
                     | Iterable<ReactNode>
                     | ReactPortal
-                    | PromiseLikeOfReactNode
                     | null
                     | undefined,
                   index: Key | null | undefined
@@ -284,7 +201,7 @@ const profilPageID: FC = () => {
                   onClick={handleDelete}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  Delete
+                  Confirm
                 </button>
                 <button
                   type="button"
