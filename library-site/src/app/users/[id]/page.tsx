@@ -10,6 +10,89 @@ import {
   FC,
 } from "react";
 
+/*
+swagger: '1.9'
+info:
+  version: 1.0.0
+  title: User Profile API
+  description: API for managing user profiles
+paths:
+  /user/{userId}:
+    get:
+      summary: Get user profile
+      description: Returns the user's profile information
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: User profile information
+          schema:
+            $ref: '#/definitions/User'
+    put:
+      summary: Update user profile
+      description: Updates the user's profile information
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+        - in: body
+          name: user
+          description: The user's new profile information
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: User profile updated
+    delete:
+      summary: Delete user profile
+      description: Deletes the user's profile
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: integer
+      responses:
+        '204':
+          description: User profile deleted
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+      surname:
+        type: string
+      email:
+        type: string
+      favoriteBooks:
+        type: array
+        items:
+          type: string
+      ownedBooks:
+        type: array
+        items:
+          type: string
+      favoriteGenre:
+        type: array
+        items:
+          type: string
+      friendList:
+        type: array
+        items:
+          type: string
+*/
+
+
+
+
+
+
+
+
 interface User {
   name: string;
   surname: string;
