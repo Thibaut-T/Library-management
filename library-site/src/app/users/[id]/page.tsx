@@ -1,7 +1,14 @@
 "use client";
-import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useState } from "react";
-import { FC } from "react";
-
+import {
+  JSXElementConstructor,
+  Key,
+  PromiseLikeOfReactNode,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useState,
+  FC,
+} from "react";
 
 interface User {
   name: string;
@@ -17,15 +24,17 @@ const profilPageID: FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedBook, setSelectedBook] = useState<string>("");
+  const [modalAction, setModalAction] = useState<string | null>(null);
 
   const handleDelete = () => {
     setUser({
       ...user,
-      [selectedCategory]: (user[selectedCategory as keyof User] as string[]).filter((item: string) => item !== selectedBook),
+      [selectedCategory]: (
+        user[selectedCategory as keyof User] as string[]
+      ).filter((item: string) => item !== selectedBook),
     });
     setShowModal(false);
   };
-
 
   const [user, setUser] = useState<User>({
     name: "John Doe",
@@ -45,12 +54,21 @@ const profilPageID: FC = () => {
     ownedBooks: string[];
     favoriteGenre: string[];
     friendList: string[];
-    [key: string]: any; // add index signature to allow indexing with a string
+    [key: string]: any;
   }
 
-  const handleOpenModal = (category: string) => {
+  const handleDeleteUser = async () => {
+    console.log("delete user");
+  };
+
+  const handleOpenModal = (category: string, action: string) => {
     setSelectedCategory(category);
-    setSelectedBook(user[category][0]);
+    setModalAction(action);
+    if (action === "Delete") {
+      setSelectedBook(user[category][0]);
+    } else if (action === "Add") {
+      setSelectedBook("");
+    }
     setShowModal(true);
   };
 
@@ -70,27 +88,46 @@ const profilPageID: FC = () => {
               :
             </span>
             <div className="flex flex-wrap justify-center p-4">
-              {user[category].map((item: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined, index: Key | null | undefined) => (
-                <div
-                  key={index}
-                  className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1 hover:bg-red-500 hover:text-white"
-                >
-                  {item}
-                  <button
-                    onClick={() => handleDelete()}
-                    className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center opacity-0 hover:opacity-100"
+              {user[category].map(
+                (
+                  item:
+                    | string
+                    | number
+                    | boolean
+                    | ReactElement<any, string | JSXElementConstructor<any>>
+                    | Iterable<ReactNode>
+                    | ReactPortal
+                    | PromiseLikeOfReactNode
+                    | null
+                    | undefined,
+                  index: Key | null | undefined
+                ) => (
+                  <div
+                    key={index}
+                    className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1 hover:bg-red-500 hover:text-white"
                   >
-                    x
-                  </button>
-                </div>
-              ))}
+                    {item}
+                    
+                  </div>
+                )
+              )}
             </div>
             <button
               type="button"
-              onClick={() => handleOpenModal(category)}
+              onClick={() => handleOpenModal(category, "Delete")}
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
             >
               Delete{" "}
+              {category
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (str) => str.toUpperCase())}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOpenModal(category, "Add")}
+              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
+            >
+              Add{" "}
               {category
                 .replace(/([A-Z])/g, " $1")
                 .replace(/^./, (str) => str.toUpperCase())}
@@ -125,21 +162,34 @@ const profilPageID: FC = () => {
                       className="text-lg leading-6 font-medium text-gray-900"
                       id="modal-title"
                     >
-                      Are you sure you want to delete this{" "}
-                      {selectedCategory
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())}
-                      ?
+                      {modalAction === "Delete"
+                        ? `Are you sure you want to delete this ${selectedCategory
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/^./, (str) => str.toUpperCase())}?`
+                        : `Add a new ${selectedCategory
+                            .replace(/([A-Z])/g, " $1")
+                            .replace(/^./, (str) => str.toUpperCase())}`}
                     </h3>
                     <form onSubmit={(e) => e.preventDefault()}>
                       <select onChange={(e) => setSelectedBook(e.target.value)}>
-                        {user[selectedCategory]
-                          .filter((item: string | number | null | undefined) => item !== null && item !== undefined)
-                          .map((item: string | number) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
-                          ))}
+                        {modalAction === "Delete"
+                          ? user[selectedCategory]
+                              .filter(
+                                (item: string | number | null | undefined) =>
+                                  item !== null && item !== undefined
+                              )
+                              .map((item: string | number) => (
+                                <option key={item} value={item}>
+                                  {item}
+                                </option>
+                              ))
+                          : ["Option 1", "Option 2", "Option 3"].map(
+                              (option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              )
+                            )}
                       </select>
                     </form>
                   </div>
@@ -165,6 +215,20 @@ const profilPageID: FC = () => {
           </div>
         </div>
       )}
+    <div className="flex justify-center">
+  <button
+    type="button"
+    onClick={() => {
+      const confirmDelete = window.confirm("Do you really want to delete the user?");
+      if (confirmDelete) {
+        handleDeleteUser();
+      }
+    }}
+    className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+  >
+    Delete User
+  </button>
+</div>
     </form>
   );
 };

@@ -22,11 +22,7 @@ const Navbar = () => {
             Authors
           </p>
         </Link>
-        <Link href="/users/ID DU MEC ">
-          <p className="cursor-pointer text-3xl text-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
-            Profil
-          </p>
-        </Link>
+        
         <Link href="/users">
           <p className="cursor-pointer text-3xl text-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
             Users
