@@ -3,10 +3,13 @@ import { FC, ReactElement, useEffect, useState} from 'react';
 import { useBooksProviders, useGenresProviders, useAddBookProviders, useDeleteBookProviders } from '@/hooks';
 import { useSortByNameInv, useSortByAuthor, useSortByAuthorInv, useSortByDate, useSortByDateInv, useSortByGenre} from '@/utils/sortingFunctions';
 import { PlainBookModel } from '@/models';
+import { useUserContext } from '@/contexts';
 
 
 
 const BooksPage: FC = (): ReactElement => {
+  const { userId } = useUserContext();
+
   const { useListBooks } = useBooksProviders();
   const { books, load: loadBooks } = useListBooks();
  
@@ -23,18 +26,15 @@ const BooksPage: FC = (): ReactElement => {
   const toggle = () => setModal(!modal);
 
   const [bookToDelete, setBookToDelete] = useState('');
-  const [userId, setUserId] = useState('');
   const [deleteModal, setDeleteModal] = useState(false);
   const deleteToggle = (id: string, name: string) => {
-    console.log(id, name);
     setBookToDelete(id);
-    setUserId('1');
     setDeleteModal(!deleteModal);  
   };
 
   const deletionConfirmed = () => {
     deleteBook(bookToDelete, userId).then(() => {
-      loadBooks('1');
+      loadBooks(userId);
       setDeleteModal(!deleteModal);
     });
   }
@@ -88,15 +88,14 @@ const BooksPage: FC = (): ReactElement => {
     newBook.writtenOn = new Date(writtenOn);
     newBook.author = author;
     newBook.genreId = selectedGenre;
-    console.log('User id : ', userId);
-    addBook(newBook, "1").then(() => {
-      loadBooks("1");
+    addBook(newBook, userId).then(() => {
+      loadBooks(userId);
       toggle();
     });
   };
 
   useEffect(() => {
-    loadBooks("1");
+    loadBooks(userId);
     loadGenres();
   }, []);
 

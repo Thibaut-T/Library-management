@@ -7,6 +7,7 @@ import BooksPage from './books/page';
 import Navbar from './components/navBar';
 import Home from './page';
 import ProfilePage from './users/page';
+import { UserProvider } from '@/contexts';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -20,13 +21,14 @@ export default function RootLayout({
   children: ReactNode;
 }): ReactElement {
   return (
-
-    <html lang="en">
-      <body className={inter.className}>
-        <Navbar />
-        
-        {children}
-        </body>
-    </html>
+    <UserProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Navbar />
+          
+          {children}
+          </body>
+      </html>
+    </UserProvider>
   );
 }

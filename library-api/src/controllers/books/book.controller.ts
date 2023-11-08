@@ -13,7 +13,6 @@ export class BookController {
 
   @Get('/:userId')
   public async getAll(@Param('userId') userId: string): Promise<PlainBookPresenter[]> {
-    console.log("userId: ", userId)
     const books = await this.bookUseCases.getAllPlain(userId);
     return books.map(PlainBookPresenter.from);
   }
@@ -35,7 +34,6 @@ export class BookController {
   @Delete('/:userId/:id')
   public async deleteBook(@Param('id') id: BookId, @Param('userId') userId: UserId): Promise<BookPresenter> {
     // Call your bookUseCases method to delete the book from the database
-    console.log("book to delete: ", id, "from user: ", userId)
     const book = await this.bookUseCases.deleteBook(id, userId);
     return BookPresenter.from(book);
   }

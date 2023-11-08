@@ -4,20 +4,17 @@ import { PlainUserModel, UserModel} from "@/models";
 
 //Provider for the list of users
 type UseListUsersProvider = {
-    users: UserModel[];
+    users: PlainUserModel[];
     load: () => void;
 };
 
 export const useListUsers = (): UseListUsersProvider => {
-    const [users, setUsers] = useState<UserModel[]>([]);
+    const [users, setUsers] = useState<PlainUserModel[]>([]);
 
     const fetchUsers = (): void => {
         axios
             .get(`${process.env.NEXT_PUBLIC_API_URL}/users`)
-            .then((data) => {
-                setUsers(data.data)
-                console.log("User list: ", data.data)
-            })
+            .then((data) => setUsers(data.data))
             .catch((err) => console.error(err));
     };
     return { users, load: fetchUsers };
@@ -43,10 +40,7 @@ export const useGetUser = (): UseGetUserProvider => {
     const fetchUser = (id: string): void => {
         axios
             .get(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`)
-            .then((data) => {
-                setUser(data.data)
-                console.log("User: ", data.data)
-            })
+            .then((data) => setUser(data.data))
             .catch((err) => console.error(err));
     };
     return { user: user || { id: "none", userName: "none", userLastName: "none" }, load: fetchUser };
@@ -77,11 +71,7 @@ export const useCreateUser = (): UseCreateUserProvider => {
         console.log(user)
         axios
             .post(`${process.env.NEXT_PUBLIC_API_URL}/users`, user)
-            .then((data) => {
-                setUser(data.data)
-                console.log("User: ", data.data)
-                console.log("user sent: ", user, "type: ", typeof(user))
-            })
+            .then((data) => setUser(data.data))
             .catch((err) => {
                 console.error(err)
                 throw err;
@@ -109,10 +99,7 @@ export const useDeleteUser = (): UseDeleteUserProvider => {
     const deleteUser = (id: string): Promise<string> => {
         return axios
             .delete(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`)
-            .then((data) => {
-                console.log('User deleted:', data.data)
-                return(data.data);
-            })
+            .then((data) => {return(data.data)})
             .catch((err) => {
                 console.error(err);
                 return Promise.reject(err.message); 

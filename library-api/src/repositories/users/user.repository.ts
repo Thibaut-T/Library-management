@@ -60,7 +60,6 @@ export class UserRepository extends Repository<User> {
         if(!user) {
             throw new Error("User not found");
         }
-        console.log("User to delete: ", user)
         await Promise.all(user.friends.map(async (friend) => {
             const byeFriend = await this.findOne({ where: { id: friend.id },
                 relations: { friends: true},

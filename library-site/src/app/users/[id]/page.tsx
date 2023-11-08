@@ -7,76 +7,47 @@ import {
   ReactNode,
   ReactPortal,
   useState,
+  useEffect,
   FC,
 } from "react";
+import { useRouter } from 'next/router'; // Import the useRouter hook
+import { useGetUserProvider } from "@/hooks";
 
+const profilPageID: FC = ({ userId }) => {
+  
+  const { useGetUser } = useGetUserProvider();
+  const { user: userToShow, load: loadUsers } = useGetUser();
 
-interface User {
-  name: string;
-  surname: string;
-  email: string;
-  favoriteBooks: string[];
-  ownedBooks: string[];
-  favoriteGenre: string[];
-  friendList: string[];
-}
-
-const profilPageID: FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedBook, setSelectedBook] = useState<string>("");
   const [modalAction, setModalAction] = useState<string | null>(null);
 
   const handleDelete = () => {
-    setUser({
-      ...user,
-      [selectedCategory]: (
-        user[selectedCategory as keyof User] as string[]
-      ).filter((item: string) => item !== selectedBook),
-    });
     setShowModal(false);
   };
-
-  const [user, setUser] = useState<User>({
-    name: "John Doe",
-    surname: "Smith",
-    email: "johndoe@example.com",
-    favoriteBooks: ["Book 1"],
-    ownedBooks: ["Book A", "Book B"],
-    favoriteGenre: ["Science Fiction"],
-    friendList: ["Friend 1", "Friend 2", "Friend 3"],
-  });
-
-  interface User {
-    name: string;
-    surname: string;
-    email: string;
-    favoriteBooks: string[];
-    ownedBooks: string[];
-    favoriteGenre: string[];
-    friendList: string[];
-    [key: string]: any;
-  }
-
   const handleDeleteUser = async () => {
     console.log("delete user");
   };
 
   const handleOpenModal = (category: string, action: string) => {
-    setSelectedCategory(category);
+    /*setSelectedCategory(category);
     setModalAction(action);
     if (action === "Delete") {
       setSelectedBook(user[category][0]);
     } else if (action === "Add") {
       setSelectedBook("");
-    }
+    }*/
     setShowModal(true);
   };
+  useEffect(() => {
+    loadUsers(userId);
+  }, []);
 
   return (
     <form className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
       <h1 className="text-2xl font-bold text-center py-4 underline">
-        {user.name} {user.surname}
+        {user.userName} {user.userLastName}
       </h1>
 
       {["favoriteBooks", "ownedBooks", "favoriteGenre", "friendList"].map(
@@ -89,7 +60,7 @@ const profilPageID: FC = () => {
               :
             </span>
             <div className="flex flex-wrap justify-center p-4">
-              {user[category].map(
+              {user[category] ? user[category].map(
                 (
                   item:
                     | string
@@ -110,7 +81,7 @@ const profilPageID: FC = () => {
                     
                   </div>
                 )
-              )}
+              ):null}
             </div>
             <button
               type="button"
@@ -231,6 +202,14 @@ const profilPageID: FC = () => {
 </div>
     </form>
   );
+};
+export const getServerSideProps = async ({ params }) => {
+  const userId = params.userId;
+  return {
+    props: {
+      userId,
+    },
+  };
 };
 
 export default profilPageID;

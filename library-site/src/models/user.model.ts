@@ -4,6 +4,7 @@ export type UserModel = {
     userLastName: string;
     friends?: string[];
 }
+
 export type PlainUserModel = {
     id: string;
     userName: string;

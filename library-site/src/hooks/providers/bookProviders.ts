@@ -13,7 +13,6 @@ export const useListBooks = (): UseListBooksProvider => {
   const [userId, setUserId] = useState<string>('');
 
   const fetchBooks = (userId: string): void => {
-    console.log("userId: ", userId)
     axios
       .get(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}`)
       .then((data) => setBooks(data.data))
@@ -45,12 +44,9 @@ export const useAddBook = (): UseAddBookProvider => {
   });
   const [userId, setUserId] = useState<string>('');
   const addBook = (bookData: bookToAdd, userId: string): Promise<PlainBookModel> => {
-    console.log('book to add: ',bookData)
-    console.log('User: ', userId)
     return axios
         .post(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}`, bookData)
         .then((data) => {
-          console.log('Book added:', data.data)
           return(data.data);
         })
         .catch((err) => {
@@ -78,7 +74,6 @@ export const useDeleteBook = (): UseDeleteBookProvider => {
     return axios
         .delete(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}/${id}`)
         .then((data) => {
-          console.log('Book deleted:', data.data)
           return(data.data);
         })
         .catch((err) => {

@@ -33,7 +33,6 @@ export class BookRepository extends Repository<Book> {
     });
     const filteredBooks = books.filter((book) => {
 
-      book.owners.map((owner) => console.log("owner id: ", owner.id == userId))
       const ownersWithUserId = book.owners.filter((owner) => owner.id == userId);
       
       return ownersWithUserId.length > 0; 
@@ -78,16 +77,9 @@ export class BookRepository extends Repository<Book> {
 
   public async createBook(newBook: bookToAdd, author: AuthorModel, userId: string): Promise<BookRepositoryOutput> {
 
-    console.log("book received: ", newBook);
-    console.log("authorId received: ", author);
-
     const book = await createBookUtils(newBook, author);
 
-    console.log("book to add: ", book);
-
     const bookExists = await this.findOne({ where: { name: book.name}, relations: { bookGenres: { genre: true }, author: true }});
-    console.log("book exists: ", bookExists);
-
     if (bookExists && (bookExists.author.id === book.author.id)) {
       const updatedBook = await this.updateBookOwners(bookExists.id, userId);
       const bookToReturn = await this.findOne({ where: { id: updatedBook }, relations: { bookGenres: { genre: true }, author: true }});
@@ -95,8 +87,6 @@ export class BookRepository extends Repository<Book> {
 
     } else {
       await this.save(book);
-      console.log("book saved: ", book.id);
-      
       const bookToAddGenre = await this.findOne({ where: { name: book.name}, relations: { bookGenres: { genre: true }, author: true }});
     }
     return book;
@@ -118,7 +108,6 @@ export class BookRepository extends Repository<Book> {
     }
     const userIdToFInd = userId as UserId;
     const owner = await this.userRepository.findOne({ where: { id: userIdToFInd } });
-    console.log("New owner: ", owner);
     book.owners.push(owner);
     const updatedBook = await this.save(book);
     return updatedBook.id;
@@ -131,7 +120,6 @@ export class BookRepository extends Repository<Book> {
    * @throws 404: book with this ID was not found
    */
   public async deleteBook(id: BookId, userId: UserId): Promise<BookRepositoryOutput> {
-    console.log("deleting book: ", id, "from library of user: ", userId);
     const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true, owners: true }});
 
     if (!book) {
@@ -142,7 +130,6 @@ export class BookRepository extends Repository<Book> {
       book.owners.splice(ownerIndex, 1);
     }
     await this.save(book);
-    console.log("book to delete: ", book, "from library of user: ", userId);
     const deletedBook = adaptBookEntityToBookModel(book)
     return deletedBook ;
   }
