@@ -10,6 +10,8 @@ import {
   FC,
 } from "react";
 
+import { useRouter } from 'next/router'
+import { useEffect } from "react";
 
 interface User {
   name: string;
@@ -22,6 +24,16 @@ interface User {
 }
 
 const profilPageID: FC = () => {
+  const [storedButtonHovered, setStoredButtonHovered] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedButtonHovered = localStorage.getItem('buttonHovered');
+    setStoredButtonHovered(storedButtonHovered);
+    setUser(prevUser => ({ ...prevUser, name: storedButtonHovered }));
+  }, []);
+
+
+  console.log("I M THE ID 2 : ",storedButtonHovered)
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedBook, setSelectedBook] = useState<string>("");
@@ -38,7 +50,7 @@ const profilPageID: FC = () => {
   };
 
   const [user, setUser] = useState<User>({
-    name: "John Doe",
+    name: "",
     surname: "Smith",
     email: "johndoe@example.com",
     favoriteBooks: ["Book 1"],
@@ -46,9 +58,9 @@ const profilPageID: FC = () => {
     favoriteGenre: ["Science Fiction"],
     friendList: ["Friend 1", "Friend 2", "Friend 3"],
   });
-
+console.log(user.name)
   interface User {
-    name: string;
+    name: string | null;
     surname: string;
     email: string;
     favoriteBooks: string[];
@@ -74,6 +86,8 @@ const profilPageID: FC = () => {
   };
 
   return (
+
+    
     <form className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
       <h1 className="text-2xl font-bold text-center py-4 underline">
         {user.name} {user.surname}

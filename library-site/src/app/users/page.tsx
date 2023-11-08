@@ -1,9 +1,20 @@
 'use client'
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { FC } from 'react';
 
 const ProfilePage: FC = () => {
+  const [buttonHovered, setButtonHovered] = useState(0);
+  const handleMouseEnter = (id: string) => {
+    setButtonHovered(1);
+    localStorage.setItem('buttonHovered', id);
+  };
+
+  const handleMouseLeave = () => {
+    setButtonHovered(0);
+    localStorage.setItem('buttonHovered', '0');
+  };
     const [searchTerm, setSearchTerm] = useState('');
     const [bookSearchTerm, setBookSearchTerm] = useState('');
 
@@ -54,8 +65,10 @@ const ProfilePage: FC = () => {
     <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">Romance</span>
   </div>
   <div className="px-6 pt-4 pb-2 flex justify-center">
-  <Link href='/users/ID DU MEC'>
-    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+  <Link href='/users/"user.id"'>
+    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    onMouseEnter={() => handleMouseEnter("user.id")}
+    onMouseLeave={handleMouseLeave}>
       Visit the profile
     </button>
     </Link>
@@ -77,7 +90,7 @@ const ProfilePage: FC = () => {
     <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">Romance</span>
   </div>
   <div className="px-6 pt-4 pb-2 flex justify-center">
-    <Link href='/users/ID DU MEC'>
+    <Link href='/users/ID123' as={`/users/${'123'}`}>
     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
       Visit the profile
     </button>
