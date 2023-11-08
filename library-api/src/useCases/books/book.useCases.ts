@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ca } from 'date-fns/locale';
 import { BookPresenter } from 'library-api/src/controllers/books/book.presenter';
-import { BookId } from 'library-api/src/entities';
+import { BookId, UserId } from 'library-api/src/entities';
 import { bookToAdd, AuthorModel} from 'library-api/src/models';
 import { BookRepository, AuthorRepository, BookGenreRepository } from 'library-api/src/repositories';
 import { AuthorUseCases } from 'library-api/src/useCases/authors/author.useCases';
@@ -21,8 +22,8 @@ export class BookUseCases {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(): Promise<PlainBookUseCasesOutput[]> {
-    return this.bookRepository.getAllPlain();
+  public async getAllPlain(userId: string): Promise<PlainBookUseCasesOutput[]> {
+    return this.bookRepository.getAllPlain(userId);
   }
 
   /**
@@ -41,8 +42,8 @@ export class BookUseCases {
    * @returns Book's ID
    * @throws 400: book's data is invalid
    */
-  public async addBook(newBook: bookToAdd): Promise<BookUseCasesOutput> {
-    console.log("book received: ", newBook);
+  public async addBook(newBook: bookToAdd, userId: string): Promise<BookUseCasesOutput> {
+    console.log("book received: ", newBook, "from user: ", userId);
     if (!newBook.name) {
       throw new Error('Book name is required');
     }
@@ -55,12 +56,14 @@ export class BookUseCases {
     if(!newBook.genreId) {
       throw new Error('Book genre is required');
     }
-    //console.log("book received: ", newBook);
+    
     const author = await this.authorRepository.addAuthor(newBook.author);
-    //console.log("author: ", author);
-    const book = await this.bookRepository.createBook(newBook, author);
+   
+    const book = await this.bookRepository.createBook(newBook, author, userId);
     const bookToModify = await this.bookRepository.getBookTypeById(book.id);
-    const bookModified = await this.bookGenreRepository.createBookGenre(bookToModify, newBook.genreId);
+    (bookToModify.bookGenres[0] == null) ? await this.bookGenreRepository.createBookGenre(bookToModify, newBook.genreId): null;
+    await this.bookRepository.updateBookOwners(bookToModify.id, userId);
+
     return book;
   }
 
@@ -70,7 +73,7 @@ export class BookUseCases {
    * @returns Book's ID
    * @throws 404: book with this ID was not found
    */
-  public async deleteBook(id: BookId): Promise<BookUseCasesOutput> {
-    return this.bookRepository.deleteBook(id);
+  public async deleteBook(id: BookId, userId: UserId): Promise<BookUseCasesOutput> {
+    return this.bookRepository.deleteBook(id, userId);
   }
 }

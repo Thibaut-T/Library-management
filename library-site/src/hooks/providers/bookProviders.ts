@@ -5,15 +5,17 @@ import { adaptToPlainBook } from '@/utils/convertingFunctions';
 
 type UseListBooksProvider = {
   books: PlainBookModel[];
-  load: () => void;
+  load: (userId: string) => void;
 };
 
 export const useListBooks = (): UseListBooksProvider => {
   const [books, setBooks] = useState<PlainBookModel[]>([]);
+  const [userId, setUserId] = useState<string>('');
 
-  const fetchBooks = (): void => {
+  const fetchBooks = (userId: string): void => {
+    console.log("userId: ", userId)
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/books`)
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}`)
       .then((data) => setBooks(data.data))
       .catch((err) => console.error(err));
   };
@@ -30,7 +32,8 @@ export const useBooksProviders = (): BookProviders => ({
 
 type UseAddBookProvider = {
   book: bookToAdd;
-  addBook: (bookData: bookToAdd) => Promise<PlainBookModel>;
+  userId: string;
+  addBook: (bookData: bookToAdd, userId: string) => Promise<PlainBookModel>;
 };
 
 export const useAddBook = (): UseAddBookProvider => {
@@ -40,10 +43,12 @@ export const useAddBook = (): UseAddBookProvider => {
     author: '',
     genreId: '',
   });
-  const addBook = (bookData: bookToAdd): Promise<PlainBookModel> => {
-    console.log(bookData)
+  const [userId, setUserId] = useState<string>('');
+  const addBook = (bookData: bookToAdd, userId: string): Promise<PlainBookModel> => {
+    console.log('book to add: ',bookData)
+    console.log('User: ', userId)
     return axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/books/`, bookData)
+        .post(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}`, bookData)
         .then((data) => {
           console.log('Book added:', data.data)
           return(data.data);
@@ -53,7 +58,7 @@ export const useAddBook = (): UseAddBookProvider => {
           throw err; 
         })
   }
-  return { book, addBook }; 
+  return { book, userId,  addBook }; 
 } 
 
 type AddBookProviders = {

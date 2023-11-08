@@ -23,16 +23,18 @@ const BooksPage: FC = (): ReactElement => {
   const toggle = () => setModal(!modal);
 
   const [bookToDelete, setBookToDelete] = useState('');
+  const [userId, setUserId] = useState('');
   const [deleteModal, setDeleteModal] = useState(false);
   const deleteToggle = (id: string, name: string) => {
     console.log(id, name);
     setBookToDelete(id);
+    setUserId('1');
     setDeleteModal(!deleteModal);  
   };
 
   const deletionConfirmed = () => {
-    deleteBook(bookToDelete).then(() => {
-      loadBooks();
+    deleteBook(bookToDelete, userId).then(() => {
+      loadBooks('1');
       setDeleteModal(!deleteModal);
     });
   }
@@ -86,14 +88,15 @@ const BooksPage: FC = (): ReactElement => {
     newBook.writtenOn = new Date(writtenOn);
     newBook.author = author;
     newBook.genreId = selectedGenre;
-    addBook(newBook).then(() => {
-      loadBooks();
+    console.log('User id : ', userId);
+    addBook(newBook, "1").then(() => {
+      loadBooks("1");
       toggle();
     });
   };
 
   useEffect(() => {
-    loadBooks();
+    loadBooks("1");
     loadGenres();
   }, []);
 
@@ -166,6 +169,7 @@ const BooksPage: FC = (): ReactElement => {
                           <div className="mt-2">
                             <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                               <input 
+                                required
                                 type="text" 
                                 name="name" 
                                 className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" 
@@ -185,6 +189,7 @@ const BooksPage: FC = (): ReactElement => {
                           <div className="mt-2">
                             <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                               <input 
+                                required 
                                 type="text" 
                                 name="author" 
                                 className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" 
@@ -204,6 +209,7 @@ const BooksPage: FC = (): ReactElement => {
                           <div className="mt-2">
                             <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                               <input 
+                                required 
                                 type="date" 
                                 name="writtenOn" 
                                 className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" 
@@ -222,6 +228,7 @@ const BooksPage: FC = (): ReactElement => {
                           </label>
                           <div className="mt-2">
                             <select 
+                              required 
                               value={selectedGenre} 
                               onChange={(e) => setSelectedGenre(e.target.value)}
                               className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">

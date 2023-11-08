@@ -1,7 +1,7 @@
-import { Author } from 'library-api/src/entities/Author';
-import { Book } from 'library-api/src/entities/Book';
-import { BookGenre } from 'library-api/src/entities/BookGenre';
-import { Genre } from 'library-api/src/entities/Genre';
+import { Author } from './Author';
+import { Book } from './Book';
+import { BookGenre } from './BookGenre';
+import { Genre } from './Genre';
 import { User } from 'library-api/src/entities/User';
 import { Comment } from 'library-api/src/entities/Comment';
 

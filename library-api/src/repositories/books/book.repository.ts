@@ -1,22 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundError, BadRequestError } from 'library-api/src/common/errors';
-import { Book, BookId} from 'library-api/src/entities';
-import { bookToAdd, AuthorModel, PlainAuthorModel} from 'library-api/src/models';
+import { NotFoundError, BadRequestError } from '../../common/errors';
+import { Book, BookId, UserId} from '../../entities';
+import { bookToAdd, AuthorModel} from '../../models';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,
-} from 'library-api/src/repositories/books/book.repository.type';
+} from '../../repositories/books/book.repository.type';
 import {
   adaptBookEntityToBookModel,
   adaptBookEntityToPlainBookModel,
   createBookUtils
-} from 'library-api/src/repositories/books/book.utils';
-
+} from '../../repositories/books/book.utils';
+import { UserRepository } from '../users/user.repository';
+import { AuthorRepository } from '../authors/author.repository';
+import { BookGenreRepository } from '../bookGenres/bookGenre.repository';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class BookRepository extends Repository<Book> {
-  constructor(public readonly dataSource: DataSource) {
+  constructor(public readonly dataSource: DataSource,
+    private readonly userRepository: UserRepository,) {
     super(Book, dataSource.createEntityManager());
   }
 
@@ -24,11 +27,19 @@ export class BookRepository extends Repository<Book> {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(): Promise<PlainBookRepositoryOutput[]> {
+  public async getAllPlain(userId: string): Promise<PlainBookRepositoryOutput[]> {
     const books = await this.find({
-      relations: { bookGenres: { genre: true }, author: true },
+      relations: { bookGenres: { genre: true }, author: true, owners: true},
     });
-    return books.map(adaptBookEntityToPlainBookModel);
+    const filteredBooks = books.filter((book) => {
+
+      book.owners.map((owner) => console.log("owner id: ", owner.id == userId))
+      const ownersWithUserId = book.owners.filter((owner) => owner.id == userId);
+      
+      return ownersWithUserId.length > 0; 
+    });
+    
+    return filteredBooks.map(adaptBookEntityToPlainBookModel);
   }
 
   /**
@@ -65,7 +76,7 @@ export class BookRepository extends Repository<Book> {
    * @throws 400: book's data is invalid or the book already exists
    */
 
-  public async createBook(newBook: bookToAdd, author: AuthorModel): Promise<BookRepositoryOutput> {
+  public async createBook(newBook: bookToAdd, author: AuthorModel, userId: string): Promise<BookRepositoryOutput> {
 
     console.log("book received: ", newBook);
     console.log("authorId received: ", author);
@@ -78,15 +89,15 @@ export class BookRepository extends Repository<Book> {
     console.log("book exists: ", bookExists);
 
     if (bookExists && (bookExists.author.id === book.author.id)) {
-      throw new BadRequestError(`Book already exists - '${bookExists.id}'`);
+      const updatedBook = await this.updateBookOwners(bookExists.id, userId);
+      const bookToReturn = await this.findOne({ where: { id: updatedBook }, relations: { bookGenres: { genre: true }, author: true }});
+      return (adaptBookEntityToBookModel(bookToReturn));
 
     } else {
       await this.save(book);
       console.log("book saved: ", book.id);
       
       const bookToAddGenre = await this.findOne({ where: { name: book.name}, relations: { bookGenres: { genre: true }, author: true }});
-      //const updatedBook = await this.bookGenreRepository.createBookGenre(bookToAddGenre, newBook.genreId);
-      //console.log("book updated: ", updatedBook);
     }
     return book;
   }
@@ -99,13 +110,17 @@ export class BookRepository extends Repository<Book> {
    * @throws 400: book's data is invalid
    * @throws 404: book with this ID was not found
    */
-  public async updateBook(id: BookId, data: Partial<Book>): Promise<BookId> {
-    const book = await this.findOne({ where: { id } });
+  public async updateBookOwners(id: BookId, userId: string): Promise<BookId> {
+    const book = await this.findOne({ where: { id },
+      relations: {owners: true }});
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
-
-    const updatedBook = await this.save({ ...book, ...data });
+    const userIdToFInd = userId as UserId;
+    const owner = await this.userRepository.findOne({ where: { id: userIdToFInd } });
+    console.log("New owner: ", owner);
+    book.owners.push(owner);
+    const updatedBook = await this.save(book);
     return updatedBook.id;
   }
 
@@ -115,16 +130,20 @@ export class BookRepository extends Repository<Book> {
    * @returns Book's ID
    * @throws 404: book with this ID was not found
    */
-  public async deleteBook(id: BookId): Promise<BookRepositoryOutput> {
-    console.log("deleting book: ", id);
+  public async deleteBook(id: BookId, userId: UserId): Promise<BookRepositoryOutput> {
+    console.log("deleting book: ", id, "from library of user: ", userId);
     const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true, owners: true }});
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
-    console.log("book to delete: ", book);
+    const ownerIndex = book.owners.findIndex(owner => owner.id === userId);
+    if (ownerIndex !== -1) {
+      book.owners.splice(ownerIndex, 1);
+    }
+    await this.save(book);
+    console.log("book to delete: ", book, "from library of user: ", userId);
     const deletedBook = adaptBookEntityToBookModel(book)
-    await this.remove(book);
     return deletedBook ;
   }
 }

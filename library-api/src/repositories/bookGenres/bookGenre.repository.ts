@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundError, BadRequestError } from 'library-api/src/common/errors';
-import { BookGenre } from 'library-api/src/entities';
-import { Book, BookGenreId, GenreId } from 'library-api/src/entities';
-import { GenreRepository } from 'library-api/src/repositories';
+import { NotFoundError, BadRequestError } from '../../common/errors';
+import { BookGenre } from '../../entities';
+import { Book, BookGenreId, GenreId } from '../../entities';
+import { GenreRepository } from '../../repositories';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
