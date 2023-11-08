@@ -256,7 +256,7 @@ const BooksPage: FC = (): ReactElement => {
   }
       <div className='flex flex-wrap'>
       {sortedBooks.map((book) => (
-        <div className="max-w-sm rounded overflow-hidden shadow-lg" key={book.id}>
+        <div className="max-w-sm rounded overflow-hidden shadow-lg" key={book.id} onClick={() => console.log(book.id)}>
         <div className="px-6 py-4">
           <div className="font-bold text-xl mb-2">{book.name}</div>
           <button className="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded" onClick={() => deleteToggle(book.id, book.name)}>
