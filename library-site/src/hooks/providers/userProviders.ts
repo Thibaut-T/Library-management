@@ -49,7 +49,7 @@ export const useGetUser = (): UseGetUserProvider => {
             })
             .catch((err) => console.error(err));
     };
-    return { user: user || { id: "none", username: "none" }, load: fetchUser };
+    return { user: user || { id: "none", userName: "none", userLastName: "none" }, load: fetchUser };
 };
 
 type GetUserProvider = {
@@ -69,7 +69,8 @@ type UseCreateUserProvider = {
 export const useCreateUser = (): UseCreateUserProvider => {
     const [user, setUser] = useState<UserModel>({
         id: "none",
-        username: "",
+        userName: "",
+        userLastName: "",
     })
 
     const createUser = (user: UserModel): void => {

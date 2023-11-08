@@ -2,7 +2,8 @@ import { BookId, User, UserId } from 'library-api/src/entities';
 
 export type PlainUserModel = {
   id: UserId;
-  username: string;
+  userName: string;
+  userLastName: string;
   friends?: string[];
   favoriteBook?: BookId;
   ownedBooks?: BookId[];
@@ -11,6 +12,7 @@ export type PlainUserModel = {
 
 export type UserModel = {
     id: UserId;
-    username: string;
+    userName: string;
+    userLastName: string;
     friends?: UserModel[];
 };

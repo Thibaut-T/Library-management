@@ -39,10 +39,11 @@ export class UserRepository extends Repository<User> {
      */
     public async createUser(user: UserModel): Promise<PlainUserModel> {
         const newUser = new User();
-        newUser.username = user.username;
+        newUser.userName = user.userName;
+        newUser.userLastName = user.userLastName;
         await this.save(newUser);
         const addedUser = await this.findOne({ 
-            where: { username: newUser.username},
+            where: { userName: newUser.userName},
             relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
         })
         return adaptUserEntityToPlainUserModel(addedUser);

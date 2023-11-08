@@ -16,7 +16,8 @@ const { user: newUser, load: addUser } = useCreateUser();
 const { useDeleteUser } = useDeleteUserProvider();
 const { deleteUser } = useDeleteUser();
 const Thomas = {
-    username: "Thomas",
+    userName: "Thomas",
+    userLastName: "Vigneron",
     id: "none",
 };
 useEffect(() => {
@@ -28,8 +29,8 @@ return <>
     <div>
         <div className="flex -mx-4">
             {users.map((user) =>
-            <div className="px-6 pt-4 pb-2" key={user.username}>
-                <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{user.username}</span>
+            <div className="px-6 pt-4 pb-2" key={user.userName}>
+                <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{user.userName}{user.userLastName}</span>
                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"> Id:{user.id}</span>
                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
                     Friends: {user.friends ? user.friends.map((friend) => 

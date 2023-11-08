@@ -22,7 +22,10 @@ export class User extends BaseEntity {
   id: UserId;
 
   @Column()
-  username: string;
+  userName: string;
+
+  @Column()
+  userLastName: string;
 
   @ManyToOne(type => Book, book => book.usersFavorite)
   favoriteBook: Book;
