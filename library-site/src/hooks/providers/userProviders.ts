@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { PlainUserModel, UserModel} from "@/models";
+import { PlainUserModel, UserModel, UserUpdateModel} from "@/models";
 
 //Provider for the list of users
 type UseListUsersProvider = {
@@ -114,4 +114,37 @@ type DeleteUserProvider = {
 
 export const useDeleteUserProvider = (): DeleteUserProvider => ({
     useDeleteUser,
+});
+
+//Provider for updating a user
+type UseUpdateUserProvider = {
+    updateUser: (user: UserUpdateModel) => void;
+};
+
+export const useUpdateUser = (): UseUpdateUserProvider => {
+    const [user, setUser] = useState<PlainUserModel>({
+        id: "none",
+        userName: "",
+        userLastName: "",
+    })
+
+    const updateUser = (user: UserUpdateModel): void => {
+        axios
+            .put(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, user)
+            .then((data) => setUser(data.data))
+            .catch((err) => {
+                console.error(err)
+                throw err;
+            });
+        
+    };
+    return { updateUser };
+}
+
+type UpdateUserProvider = {
+    useUpdateUser: () => UseUpdateUserProvider;
+};
+
+export const useUpdateUserProvider = (): UpdateUserProvider => ({
+    useUpdateUser,
 });

@@ -1,215 +1,304 @@
 "use client";
 import React from "react";
-import {
-  JSXElementConstructor,
-  Key,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  useState,
-  useEffect,
-  FC,
-} from "react";
-import { useRouter } from 'next/router'; // Import the useRouter hook
-import { useGetUserProvider } from "@/hooks";
+import { useState, useEffect, FC} from "react";
+import { useParams } from 'next/navigation';
+import Modal from "@/app/components/modal";
+import { findName, findId } from "@/utils/findingFunctions";
+import { useUpdateUserProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders } from "@/hooks";
+import { PlainUserModel, UserUpdateModel } from "@/models";
 
-const profilPageID: FC = ({ userId }) => {
-  
+interface DropdownProps {
+  options: string[];
+  onChange: (value: string) => void;
+}
+
+const Dropdown: FC<DropdownProps> = ({ options, onChange }) => {
+  return (
+    <select onChange={(e) => onChange(e.target.value)}>
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  );
+};
+
+const profilPageID: FC = () => {
+  const { id } = useParams();
+  const userId = id as string;
+  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState('');
+
   const { useGetUser } = useGetUserProvider();
   const { user: userToShow, load: loadUsers } = useGetUser();
 
-  const [showModal, setShowModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedBook, setSelectedBook] = useState<string>("");
-  const [modalAction, setModalAction] = useState<string | null>(null);
+  const { useListUsers } = useUserProviders();
+  const { users, load: loadUsersList } = useListUsers();
 
-  const handleDelete = () => {
-    setShowModal(false);
+  const { useListGenres } = useGenresProviders();
+  const { genres, load: loadGenres } = useListGenres();
+
+  const { useListBooks } = useBooksProviders();
+  const { books, load: loadBooks } = useListBooks();
+
+  const { useDeleteUser } = useDeleteUserProvider();
+  const { deleteUser } = useDeleteUser();
+  
+  const { useAddBook } = useAddBookProviders();
+  const { addBook } = useAddBook();
+
+  const { useDeleteBook } = useDeleteBookProviders();
+  const { deleteBook } = useDeleteBook();
+
+  const { useUpdateUser } = useUpdateUserProvider();
+  const { updateUser } = useUpdateUser();
+  const [userToUpdate, setUserToUpdate] = useState<PlainUserModel>();
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedModalValue, setSelectedModalValue] = useState<string>('');
+
+  const handleUpdate = async (cat: string, action: string, value: string) => {
+    // Update userToShow with the new value
+    console.log(" Category: ", cat, " Value: ", value, " Action: ", action);
+    // Call updateUser function with the updated data
+    const update : UserUpdateModel = {
+      id: userToShow.id,
+      userName: userToShow.userName,
+      userLastName: userToShow.userLastName,
+    };
+    if(action === "Add"){
+      cat === "favoriteBook" ?
+      update.newFavoriteBook = findId(value, books)
+      : cat === "ownedBooks" ?
+      update.newOwnedBook = findId(value, books)
+      : cat == "friends" ?
+      update.newFriend = value
+      : cat == "favoriteGenres" ?
+      update.newFavoriteGenre = findId(value, genres)
+      : null;
+      console.log("User: ", userToShow, " update: ", update);
+      const updatedUser = await updateUser(update);
+    }
+    else if(action === "Delete"){
+      const bookId = findId(value, books);
+      console.log("Book id: ", bookId);
+      cat === "ownedBooks" ? 
+      await deleteBook(bookId, userId)
+      : null;
+    }
+    // Handle the response if needed
   };
+
   const handleDeleteUser = async () => {
     console.log("delete user");
+    const response = await deleteUser(userId);
   };
 
+  const [modalInfo, setModalInfo] = useState<{
+    category: string;
+    action: string;
+  } | null>(null);
+  
   const handleOpenModal = (category: string, action: string) => {
-    /*setSelectedCategory(category);
-    setModalAction(action);
-    if (action === "Delete") {
-      setSelectedBook(user[category][0]);
-    } else if (action === "Add") {
-      setSelectedBook("");
-    }*/
-    setShowModal(true);
+    setModalInfo({ category, action });
   };
+  
+  const handleCloseModal = () => {
+    setSelectedModalValue(''); // Clear the selected value
+    setModalInfo(null);
+  };
+
   useEffect(() => {
     loadUsers(userId);
+    loadBooks("none");
+    loadGenres();
+    loadUsersList();
   }, []);
-
+  if(error){
+    return <div>Error: {error}</div>
+  }
+  //console.log("User to show: ", userToShow) 
   return (
-    <form className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
-      <h1 className="text-2xl font-bold text-center py-4 underline">
-        {user.userName} {user.userLastName}
-      </h1>
-
-      {["favoriteBooks", "ownedBooks", "favoriteGenre", "friendList"].map(
-        (category) => (
-          <div className="px-8 py-4" key={category}>
-            <span className="text-gray-700 block text-center">
-              {category
-                .replace(/([A-Z])/g, " $1")
-                .replace(/^./, (str) => str.toUpperCase())}{" "}
-              :
-            </span>
-            <div className="flex flex-wrap justify-center p-4">
-              {user[category] ? user[category].map(
-                (
-                  item:
-                    | string
-                    | number
-                    | boolean
-                    | ReactElement<any, string | JSXElementConstructor<any>>
-                    | Iterable<ReactNode>
-                    | ReactPortal
-                    | null
-                    | undefined,
-                  index: Key | null | undefined
-                ) => (
-                  <div
-                    key={index}
-                    className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1 hover:bg-red-500 hover:text-white"
-                  >
-                    {item}
-                    
-                  </div>
-                )
-              ):null}
-            </div>
-            <button
-              type="button"
-              onClick={() => handleOpenModal(category, "Delete")}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Delete{" "}
-              {category
-                .replace(/([A-Z])/g, " $1")
-                .replace(/^./, (str) => str.toUpperCase())}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOpenModal(category, "Add")}
-              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
-            >
-              Add{" "}
-              {category
-                .replace(/([A-Z])/g, " $1")
-                .replace(/^./, (str) => str.toUpperCase())}
-            </button>
-          </div>
-        )
-      )}
-
-      {showModal && (
-        <div
-          className="fixed z-10 inset-0 overflow-y-auto"
-          aria-labelledby="modal-title"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              aria-hidden="true"
-            ></div>
-            <span
-              className="hidden sm:inline-block sm:align-middle sm:h-screen"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3
-                      className="text-lg leading-6 font-medium text-gray-900"
-                      id="modal-title"
-                    >
-                      {modalAction === "Delete"
-                        ? `Are you sure you want to delete this ${selectedCategory
-                            .replace(/([A-Z])/g, " $1")
-                            .replace(/^./, (str) => str.toUpperCase())}?`
-                        : `Add a new ${selectedCategory
-                            .replace(/([A-Z])/g, " $1")
-                            .replace(/^./, (str) => str.toUpperCase())}`}
-                    </h3>
-                    <form onSubmit={(e) => e.preventDefault()}>
-                      <select onChange={(e) => setSelectedBook(e.target.value)}>
-                        {modalAction === "Delete"
-                          ? user[selectedCategory]
-                              .filter(
-                                (item: string | number | null | undefined) =>
-                                  item !== null && item !== undefined
-                              )
-                              .map((item: string | number) => (
-                                <option key={item} value={item}>
-                                  {item}
-                                </option>
-                              ))
-                          : ["Option 1", "Option 2", "Option 3"].map(
-                              (option) => (
-                                <option key={option} value={option}>
-                                  {option}
-                                </option>
-                              )
-                            )}
-                      </select>
-                    </form>
-                  </div>
+    <div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
+      {userToShow && (
+        <>
+          {/* Display favoriteBook */}
+          <div className="px-8 py-4">
+            <span className="text-gray-700 block text-center">Favorite Book:</span>
+            {/* Display favoriteBook items */}
+            {userToShow.favoriteBook && (
+              <div className="flex justify-center p-4">
+                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
+                  {findName(userToShow.favoriteBook, books)}
                 </div>
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Confirm
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+            )}
+            {/* Modal buttons */}
+            <button
+              type="button"
+              onClick={() => handleOpenModal("favoriteBook", "Change")}
+              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
+            >
+              Change favorite book
+            </button>
           </div>
+          
+          {/* Display ownedBooks */}
+          <div className="px-8 py-4">
+            <span className="text-gray-700 block text-center">Owned Books:</span>
+            {/* Display ownedBooks items */}
+            {userToShow.ownedBooks && userToShow.ownedBooks.map((book) => (
+              <div className="flex justify-center p-1" key={book}>
+                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
+                  {findName(book, books)}
+                </div>
+              </div>
+            ))}
+            {/* Modal buttons for ownedBooks */}
+            <button
+              type="button"
+              onClick={() => handleOpenModal("ownedBooks", "Delete")}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+            >
+              Delete a book
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOpenModal("ownedBooks", "Add")}
+              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
+            >
+              Add a book
+            </button>
+          </div>
+          
+          {/* Display friends */}
+          <div className="px-8 py-4">
+            <span className="text-gray-700 block text-center">Friend list:</span>
+            {/* Display friends items */}
+            {userToShow.friends && userToShow.friends.map((friend) => (
+              <div className="flex justify-center p-1" key={friend}>
+                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
+                  {friend}
+                </div>
+              </div>
+            ))}
+          {/* Modal buttons for friends */}
+          <button
+              type="button"
+              onClick={() => handleOpenModal("friends", "Delete")}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+            >
+              Delete a friend
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOpenModal("friends", "Add")}
+              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
+            >
+              Add a friend
+            </button>
+          </div>
+
+          {/* Display favoriteGenres */}
+          <div className="px-8 py-4">
+            <span className="text-gray-700 block text-center">Favorite genres:</span>
+            {/* Display friends items */}
+            {userToShow.favoriteGenres && userToShow.favoriteGenres.map((genre) => (
+              <div className="flex justify-center p-1" key={genre}>
+                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
+                  {findName(genre, genres)}
+                </div>
+              </div>
+            ))}
+          {/* Modal buttons for favoriteGenres */}
+          <button
+              type="button"
+              onClick={() => handleOpenModal("favoriteGenres", "Delete")}
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+            >
+              Delete a favorite genre
+            </button>
+            <button
+              type="button"
+              onClick={() => handleOpenModal("favoriteGenres", "Add")}
+              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
+            >
+              Add a favorite genre
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Modal component */}
+      {showModal && (
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          {/* Modal content */}
         </div>
       )}
-    <div className="flex justify-center">
-  <button
-    type="button"
-    onClick={() => {
-      const confirmDelete = window.confirm("Do you really want to delete the user?");
-      if (confirmDelete) {
-        handleDeleteUser();
-      }
-    }}
-    className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-  >
-    Delete User
-  </button>
-</div>
-    </form>
+      {/* Modal overlay */}
+      {modalInfo && (
+        <Modal
+          show={true}
+          onClose={handleCloseModal}
+          title={`Select a ${modalInfo.category}`}
+          action={modalInfo.action}
+          category={modalInfo.category}
+          items={
+            modalInfo.category === "favoriteBook"
+              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)): [])
+              : modalInfo.category === "ownedBooks" && modalInfo.action === "Delete"
+              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)): [])
+              : modalInfo.category === "ownedBooks" && modalInfo.action === "Add" 
+              ? books.map((book) => book.name)
+              : modalInfo.category === "friends" && modalInfo.action === "Delete"
+              ? userToShow.friends
+              : modalInfo.category === "friends" && modalInfo.action === "Add"
+              ? users.map((user) => `${user.userName} ${user.userLastName}`)
+              : modalInfo.category === "favoriteGenres" && modalInfo.action === "Delete"
+              ? (userToShow.favoriteGenres ? userToShow.favoriteGenres.map((genre) => findName(genre, genres)): [])
+              : modalInfo.category === "favoriteGenres" && modalInfo.action === "Add"
+              ? genres.map((genre) => genre.name)
+              : []
+          }
+          onSubmit={(selectedValue, category, action) => {
+            console.log("Selected value: ", selectedValue);
+            // Handle form submission based on the category (ownedBooks, favoriteBook, etc.)
+            if (category === 'ownedBooks') {
+              // Logic for handling ownedBooks category
+              handleUpdate(category, action, selectedValue);
+            } else if (category === 'favoriteBook') {
+              // Logic for handling favoriteBook category
+              handleUpdate(category, action, selectedValue);
+            } else if (category === 'friends') {
+              // Logic for handling other categories
+              handleUpdate(category, action, selectedValue);
+            } else if (category === 'favoriteGenres') {
+              // Logic for handling other categories
+              handleUpdate(category, action, selectedValue);
+            }
+          }}
+        />
+      )}
+
+
+      {/* Delete User button */}
+      <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={() => {
+            const confirmDelete = window.confirm("Do you really want to delete the user?");
+            if (confirmDelete) {
+              handleDeleteUser();
+            }
+          }}
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+        >
+          Delete User
+        </button>
+      </div>
+    </div>
   );
-};
-export const getServerSideProps = async ({ params }) => {
-  const userId = params.userId;
-  return {
-    props: {
-      userId,
-    },
-  };
 };
 
 export default profilPageID;

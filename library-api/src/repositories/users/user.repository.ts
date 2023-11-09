@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserId } from 'library-api/src/entities';
-import { UserModel, PlainUserModel } from 'library-api/src/models';
-import { CommentRepository } from 'library-api/src/repositories/comments/comment.repository';
+import { forwardRef, Inject } from '@nestjs/common';
+import { Book, BookId, User, UserId, Genre } from 'library-api/src/entities';
+import { UserModel, PlainUserModel, UserUpdateModel } from 'library-api/src/models';
+import { CommentRepository } from '../comments/comment.repository';
+import { BookRepository } from '../books/book.repository';
+import { GenreRepository } from '../genres/genre.repository';
 import { DataSource, Repository } from 'typeorm';
 import { adaptUserEntityToPlainUserModel } from 'library-api/src/repositories/users/user.utils';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
     constructor(public readonly dataSource: DataSource,
-        private readonly commentRepository: CommentRepository,) {
+        private readonly commentRepository: CommentRepository,
+        @Inject(forwardRef(() => BookRepository))
+        private readonly bookRepository: BookRepository,
+        private readonly genreRepository: GenreRepository) {
         super(User, dataSource.createEntityManager());
     }
 
@@ -86,6 +92,43 @@ export class UserRepository extends Repository<User> {
         const deletedUser = adaptUserEntityToPlainUserModel(user);
         await this.remove(user);
         return deletedUser;
-        //LES COMMS BLOQUENT LA SUPPRESSION DE L'UTILISATEUR (FOREIGN KEY)
+    };
+
+    /**
+     * Update a user
+     * @param id The user id
+     * @param user The user data to update
+     */
+
+    public async updateUser(id: UserId, user: UserUpdateModel): Promise<PlainUserModel> {
+        console.log("user : ", user)
+        const userToUpdate = await this.findOne({ where: { id },
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        if(!userToUpdate) {
+            throw new Error("User not found");
+        }
+        console.log("user to update at start: ", userToUpdate)
+        userToUpdate.userName = user.userName;
+        userToUpdate.userLastName = user.userLastName;
+        const newFavoriteBook = await this.bookRepository.findOne({ where: {id: user.newFavoriteBook}});
+
+        const newFavoriteGenre = await this.genreRepository.findOne({ where: {id: user.newFavoriteGenre}});
+        const newOwnedBook = await this.bookRepository.findOne({ where: {id: user.newOwnedBook}});
+        console.log("new owned book: ", newOwnedBook)
+        //newFavoriteBook ? userToUpdate.favoriteBook = newFavoriteBook : null;
+        //newFavoriteGenre ? userToUpdate.favoriteGenres.push(newFavoriteGenre) : null;
+        if (newOwnedBook) {
+            userToUpdate.ownedBooks.push(newOwnedBook);
+        }
+        console.log("user to update at : ", userToUpdate)
+        await this.save(userToUpdate);
+        if (newOwnedBook) {
+            await this.bookRepository.updateBookOwners(newOwnedBook.id, id);
+        }
+        const updatedUser = await this.findOne({ where: { id },
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        return adaptUserEntityToPlainUserModel(updatedUser);
     };
 };

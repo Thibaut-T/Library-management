@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Put, Param, Body } from '@nestjs/common';
 import { UserId } from 'library-api/src/entities';
 import { PlainUserModel, UserModel } from 'library-api/src/models';
 import { UserUseCases } from 'library-api/src/useCases/users/user.useCases';
@@ -31,5 +31,12 @@ export class UserController {
         console.log("User to delete: ", id)
         const user = await this.userUseCases.deleteUser(id);
         return user;
+    }
+
+    @Put('/:id')
+    public async update(@Param('id') id: UserId, @Body() user: PlainUserModel): Promise<PlainUserModel> {
+        console.log("User to update: ", id)
+        const updatedUser = await this.userUseCases.updateUser(id, user);
+        return updatedUser;
     }
 }

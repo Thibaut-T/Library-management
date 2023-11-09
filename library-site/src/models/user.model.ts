@@ -14,3 +14,13 @@ export type PlainUserModel = {
     ownedBooks?: string[];
     favoriteGenres?: string[];
   };
+
+  export type UserUpdateModel = {
+    id: string;
+    userName?: string;
+    userLastName?: string;
+    newFriend?: string;
+    newFavoriteGenre?: string;
+    newFavoriteBook?: string;
+    newOwnedBook?: string;
+};

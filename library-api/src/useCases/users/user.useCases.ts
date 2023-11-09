@@ -27,4 +27,8 @@ export class UserUseCases {
     public async deleteUser(id: UserId): Promise<PlainUserModel> {
         return this.userRepository.deleteUser(id);
     }
+
+    public async updateUser(id: UserId, user: PlainUserModel): Promise<PlainUserModel> {
+        return this.userRepository.updateUser(id, user);
+    }
 };
