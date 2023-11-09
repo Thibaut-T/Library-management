@@ -14,6 +14,7 @@ export class GenreRepository extends Repository<Genre> {
 
   public async getAllGenres(): Promise<GenreRepositoryOutput[]> {
     const genres = await this.find();
+    console.log("genres: ", genres);
     return genres.map(adaptGenreEntityToGenreModel);
   }
 }

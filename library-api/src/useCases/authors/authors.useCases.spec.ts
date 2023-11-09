@@ -1,14 +1,23 @@
-import { AuthorUseCases } from '../useCases/authors/author.useCases';
-import { AuthorRepository } from '../repositories';
-import { AuthorModel }  from '../models';
-import { AuthorId } from '../entities';
-import { createAuthor } from '../repositories/authors/author.utils';
+import { AuthorUseCases } from './author.useCases';
+import { AuthorRepository } from '../../repositories';
+import { AuthorModel }  from '../../models';
+import { AuthorId } from '../../entities';
+import { createAuthor } from '../../repositories/authors/author.utils';
 
 describe('AuthorUseCases', () => {
     describe('getAllAuthors', () => {
       it('should call repository function', async () => {
             const repository = { getAllAuthors: jest.fn() } as unknown as AuthorRepository;
             const useCases = new AuthorUseCases(repository);
+            const result = await useCases.getAllAuthors();
+
+            const authorModel1: AuthorModel = {
+                id: '123' as AuthorId,
+                firstName: 'John',
+                lastName: 'Doe',
+                photoUrl: 'http://example.com/john-doe.jpg',
+                books: [],
+            };
         });
     });
     describe('addAuthor', () => {

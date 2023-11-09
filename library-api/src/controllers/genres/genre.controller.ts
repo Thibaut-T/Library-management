@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GenrePresenter,} from './genre.presenter';
-import { GenreUseCases } from 'library-api/src/useCases';
+import { GenreUseCases } from '../../useCases';
 
 @Controller('genres')
 export class GenreController {

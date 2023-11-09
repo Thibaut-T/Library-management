@@ -2,10 +2,10 @@ import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import {
   BookPresenter,
   PlainBookPresenter,
-} from 'library-api/src/controllers/books/book.presenter';
-import { BookId } from 'library-api/src/entities';
-import { bookToAdd } from 'library-api/src/models';
-import { BookUseCases } from 'library-api/src/useCases';
+} from './book.presenter';
+import { BookId } from '../../entities';
+import { bookToAdd } from '../../models';
+import { BookUseCases } from '../../useCases';
 
 @Controller('books')
 export class BookController {
