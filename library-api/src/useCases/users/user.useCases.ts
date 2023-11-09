@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { User, UserId } from "library-api/src/entities";
+import { User, UserId, GenreId } from "library-api/src/entities";
 import { UserModel, PlainUserModel } from "library-api/src/models";
 import { UserRepository } from "library-api/src/repositories/users/user.repository";
 
@@ -34,5 +34,13 @@ export class UserUseCases {
 
     public async addFriend(id: UserId, friend: UserId): Promise<PlainUserModel> {
         return this.userRepository.addFriend(id, friend);
+    }
+
+    public async deleteFriend(id: UserId, friend: UserId): Promise<PlainUserModel> {
+        return this.userRepository.deleteFriend(id, friend);
+    }
+
+    public async deleteFavoriteGenre(id: UserId, genre: GenreId): Promise<PlainUserModel> {
+        return this.userRepository.deleteFavoriteGenre(id, genre);
     }
 };

@@ -15,7 +15,6 @@ import { PlainUserModel} from 'library-api/src/models';
 
 export type UserId = string & { __brand: 'User'};
 
-
 @Entity('Users')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')

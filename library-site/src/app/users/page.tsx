@@ -2,13 +2,21 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { FC } from 'react';
-import { useUserProviders } from '@/hooks';
+import { useUserProviders, useGenresProviders, useBooksProviders } from '@/hooks';
+import { findName } from "@/utils/findingFunctions";
 
 const ProfilePage: FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [bookSearchTerm, setBookSearchTerm] = useState('');
+
   const { useListUsers } = useUserProviders();
   const { users, load: loadUsers } = useListUsers();
+
+  const { useListGenres } = useGenresProviders();
+  const { genres, load: loadGenres } = useListGenres();
+
+  const { useListBooks } = useBooksProviders();
+  const { books, load: loadBooks } = useListBooks();
 
   const handleBookSearch = (e: React.ChangeEvent<any>) => {
     setBookSearchTerm(e.target.value);
@@ -23,7 +31,10 @@ const ProfilePage: FC = () => {
 
   useEffect((() => {
     loadUsers();
-  }), []);
+    loadBooks("none");
+    loadGenres();
+  }), [users, books, genres]);
+  console.log(users);
   return (
     <div>
       <h1 className='text-center text-4xl font-bold my-4 underline'>Welcome to the users page</h1>
@@ -50,14 +61,14 @@ const ProfilePage: FC = () => {
               <div className="font-bold text-xl mb-2">{user.userName} {user.userLastName}</div>
                 {user.favoriteBook ? 
                   <p className="text-gray-700 text-base">
-                    {user.favoriteBook} 
+                    {findName(user.favoriteBook, books)} 
                   </p>
                   : "pas de livre favoris"
                 }
               </div>
               <div className="px-6 pt-4 pb-2">
                 {user.favoriteGenres && user.favoriteGenres[0] ? user.favoriteGenres.map((genre) => (
-                  <span key={genre} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{genre}</span>
+                  <span key={genre} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{findName(genre,genres)}</span>
                 )) : <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">Pas de genres favoris</span>}
               </div>
               <div className="px-6 pt-4 pb-2 flex justify-center">

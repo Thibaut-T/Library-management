@@ -127,8 +127,9 @@ export const useUpdateUser = (): UseUpdateUserProvider => {
         userName: "",
         userLastName: "",
     })
-
+    
     const updateUser = (user: UserUpdateModel): void => {
+        console.log("Provider: ",user);
         axios
             .put(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, user)
             .then((data) => setUser(data.data))
@@ -175,3 +176,59 @@ type AddFriendProvider = {
 export const useAddFriendProvider = (): AddFriendProvider => ({
     useAddFriend,
 });
+
+//Provider for deleting a friend from a user
+type UseDeleteFriendProvider = {
+    deleteFriend: (userId: string, friend: string) => void;
+};
+
+export const useDeleteFriend = (): UseDeleteFriendProvider => {
+    const deleteFriend = (userId: string, friend: string): void => {
+        axios
+            .delete(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}/friends/${friend}`)
+            .then((data) => console.log(data))
+            .catch((err) => {
+                console.error(err)
+                throw err;
+            });
+        
+    };
+    return { deleteFriend };
+}
+
+type DeleteFriendProvider = {
+    useDeleteFriend: () => UseDeleteFriendProvider;
+};
+
+export const useDeleteFriendProvider = (): DeleteFriendProvider => ({
+    useDeleteFriend,
+});
+
+//Provider for deleting a favorite genre to a user
+
+type UseDeleteFavoriteGenreProvider = {
+    deleteFavoriteGenre: (userId: string, genreId: string) => void;
+};
+
+export const useDeleteFavoriteGenre = (): UseDeleteFavoriteGenreProvider => {
+    const deleteFavoriteGenre = (userId: string, genreId: string): void => {
+        axios
+            .delete(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}/favoriteGenres/${genreId}`)
+            .then((data) => console.log(data))
+            .catch((err) => {
+                console.error(err)
+                throw err;
+            });
+        
+    };
+    return { deleteFavoriteGenre };
+}
+
+type DeleteFavoriteGenreProvider = {
+    useDeleteFavoriteGenre: () => UseDeleteFavoriteGenreProvider;
+};
+
+export const useDeleteFavoriteGenreProvider = (): DeleteFavoriteGenreProvider => ({
+    useDeleteFavoriteGenre,
+});
+

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { forwardRef, Inject } from '@nestjs/common';
-import { Book, BookId, User, UserId, Genre } from 'library-api/src/entities';
+import { User, UserId, GenreId } from 'library-api/src/entities';
 import { UserModel, PlainUserModel, UserUpdateModel } from 'library-api/src/models';
 import { CommentRepository } from '../comments/comment.repository';
 import { BookRepository } from '../books/book.repository';
@@ -76,6 +76,16 @@ export class UserRepository extends Repository<User> {
                 await this.save(byeFriend);
             }
         }));
+        await Promise.all(user.favoriteGenres.map(async (genre) => {
+            const byeGenre = await this.genreRepository.findOne({ where: { id: genre.id },
+                relations: { users: true},
+            });
+            if (byeGenre && byeGenre.users) {
+                // Remove the user from the genre's users list
+                byeGenre.users = byeGenre.users.filter(u => u.id !== user.id);
+                await this.genreRepository.save(byeGenre);
+            }
+        }));
         /*await Promise.all(user.comments.map(async (comment) => {
             try {
                 // Remove the comment from the database
@@ -107,33 +117,50 @@ export class UserRepository extends Repository<User> {
         if(!userToUpdate) {
             throw new Error("User not found");
         }
+        //console.log("userToUpdate: ", userToUpdate.favoriteBook)
+        //console.log("user: ", user.newFavoriteBook)
         userToUpdate.userName = user.userName;
         userToUpdate.userLastName = user.userLastName;
-        const newFavoriteBook = await this.bookRepository.findOne({ where: {id: user.newFavoriteBook}});
-
-        const newFavoriteGenre = await this.genreRepository.findOne({ where: {id: user.newFavoriteGenre}});
-        //const checkFavoriteGenre = userToUpdate.favoriteGenres.find(genre => genre.id === newFavoriteGenre.id);
-
-        const newOwnedBook = await this.bookRepository.findOne({ where: {id: user.newOwnedBook}});
-        const checkOwnedBook = userToUpdate.ownedBooks.find(book => book.id === newOwnedBook.id);
-
-        if(newFavoriteBook != userToUpdate.favoriteBook) {
-            userToUpdate.favoriteBook = newFavoriteBook;
-            console.log("new favorite book: ", newFavoriteBook)
+        if(user.newFavoriteBook === "") {
+            userToUpdate.favoriteBook = null;
         }
-        /*if (!checkFavoriteGenre) {
-            userToUpdate.favoriteGenres.push(newFavoriteGenre);
-        }*/
-        if (!checkOwnedBook) {
-            userToUpdate.ownedBooks.push(newOwnedBook);
+        if(user.newFavoriteBook) {
+            const newFavoriteBook = await this.bookRepository.findOne({ where: {id: user.newFavoriteBook}});
+            if (!newFavoriteBook) {
+                throw new Error('New favorite book not found');
+            }
+            if(newFavoriteBook != userToUpdate.favoriteBook) {
+                userToUpdate.favoriteBook = newFavoriteBook;
+                console.log("new favorite book: ", newFavoriteBook)
+            }
         }
-        if (newOwnedBook) {
-            await this.bookRepository.updateBookOwners(newOwnedBook.id, id);
+        if(user.newFavoriteGenre){
+            const newFavoriteGenre = await this.genreRepository.findOne({ where: {id: user.newFavoriteGenre}});
+            if (!newFavoriteGenre) {
+                throw new Error('New favorite genre not found');
+            }
+            const checkFavoriteGenre = userToUpdate.favoriteGenres.find(genre => genre.id === newFavoriteGenre.id);
+            if (!checkFavoriteGenre) {
+                userToUpdate.favoriteGenres.push(newFavoriteGenre);
+                await this.genreRepository.updateGenreUsers(newFavoriteGenre.id, userToUpdate);
+            }
+        }
+        if(user.newOwnedBook) {
+            const newOwnedBook = await this.bookRepository.findOne({ where: {id: user.newOwnedBook}});
+            if(!newOwnedBook) {
+                throw new Error('New owned book not found');
+            }
+            const checkOwnedBook = userToUpdate.ownedBooks.find(book => book.id === newOwnedBook.id);
+            if (!checkOwnedBook) {
+                userToUpdate.ownedBooks.push(newOwnedBook);
+                await this.bookRepository.updateBookOwners(newOwnedBook.id, id);
+            }
         }
         await this.save(userToUpdate)
         const updatedUser = await this.findOne({ where: { id },
             relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
         });
+        //console.log("updatedUser: ", updatedUser.favoriteBook)
         return adaptUserEntityToPlainUserModel(updatedUser);
     };
 
@@ -164,4 +191,58 @@ export class UserRepository extends Repository<User> {
         console.log("friend after adding friend: ", friendToAdd.friends)
         return adaptUserEntityToPlainUserModel(user);
     };
+
+    /**
+     * Remove a friend from a user
+     * @param id The user id
+     * @param friend The friend to remove
+     */
+    public async deleteFriend(id: UserId, friend: UserId): Promise<PlainUserModel> {
+        const user = await this.findOne({ where: { id: id},
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        if(!user) {
+            throw new Error("User not found");
+        }
+        const friendToRemove = await this.findOne({ where: { id: friend },
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        if(!friendToRemove) {
+            throw new Error("Friend not found");
+        }
+        user.friends = user.friends.filter(f => f.id !== friendToRemove.id);
+        friendToRemove.friends = friendToRemove.friends.filter(f => f.id !== user.id);
+        await this.save(user);
+        await this.save(friendToRemove);
+        return adaptUserEntityToPlainUserModel(user);
+    };
+
+    /**
+     * Remove a favorite genre from a user
+     * @param id The user id
+     * @param genre The genre to remove
+     */
+
+    public async deleteFavoriteGenre(id: UserId, genreId: GenreId): Promise<PlainUserModel> {
+        console.log("genreId: ", genreId)
+        console.log("id: ", id)
+        const user = await this.findOne({ where: { id: id},
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        console.log("user: ", user)
+        if(!user) {
+            throw new Error("User not found");
+        }
+        const genreToRemove = await this.genreRepository.findOne({ where: { id: genreId },
+            relations: { users: true},
+        });
+        if(!genreToRemove) {
+            throw new Error("Genre not found");
+        }
+        user.favoriteGenres = user.favoriteGenres.filter(g => g.id !== genreToRemove.id);
+        genreToRemove.users = genreToRemove.users.filter(u => u.id !== user.id);
+        await this.save(user);
+        await this.genreRepository.save(genreToRemove);
+        return adaptUserEntityToPlainUserModel(user);
+    }
 };

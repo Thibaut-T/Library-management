@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 import { useState, useEffect, FC} from "react";
+
 import { useParams } from 'next/navigation';
 import Modal from "@/app/components/modal";
 import { findName, findId } from "@/utils/findingFunctions";
-import { useUpdateUserProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders } from "@/hooks";
+import { useDeleteFavoriteGenreProvider, useUpdateUserProvider, useDeleteFriendProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders } from "@/hooks";
 import { PlainUserModel, UserUpdateModel } from "@/models";
 
 interface DropdownProps {
@@ -54,6 +55,12 @@ const profilPageID: FC = () => {
   const { useAddFriend } = useAddFriendProvider();
   const { addFriend } = useAddFriend();
 
+  const { useDeleteFriend } = useDeleteFriendProvider();
+  const { deleteFriend } = useDeleteFriend();
+
+  const { useDeleteFavoriteGenre } = useDeleteFavoriteGenreProvider();
+  const { deleteFavoriteGenre } = useDeleteFavoriteGenre();
+
   const { useUpdateUser } = useUpdateUserProvider();
   const { updateUser } = useUpdateUser();
   const [userToUpdate, setUserToUpdate] = useState<PlainUserModel>();
@@ -70,25 +77,28 @@ const profilPageID: FC = () => {
       userName: userToShow.userName,
       userLastName: userToShow.userLastName,
     };
-    if(action === "Add" || action == "Change" && cat != "friends"){
+    if((action === "Add" || action == "Change") && cat != "friends"){
       cat === "favoriteBook" ?
       update.newFavoriteBook = findId(value, books)
       : cat === "ownedBooks" ?
-      update.newOwnedBook = findId(value, books)
+      update.newOwnedBook = value
       : cat == "favoriteGenres" ?
-      update.newFavoriteGenre = findId(value, genres)
+      update.newFavoriteGenre = value
       : null;
       console.log("User: ", userToShow, " update: ", update);
-      const updatedUser = await updateUser(update);
+      await updateUser(update);
     }
     else if(action === "Add" && cat === "friends"){
+      console.log("Add friend: ", value, " with id: ", userId, " and name: ", userToShow.userName, " ", userToShow.userLastName);
       await addFriend(userId, value)
     }
     else if(action === "Delete"){
-      const bookId = findId(value, books);
-      console.log("Book id: ", bookId);
       cat === "ownedBooks" ? 
-      await deleteBook(bookId, userId)
+      await deleteBook(value, userId)
+      : cat === "friends" ?
+      await deleteFriend(userId, value)
+      : cat === "favoriteGenres" ?
+      await deleteFavoriteGenre(userId, value)
       : null;
     }
     // Handle the response if needed
@@ -97,6 +107,14 @@ const profilPageID: FC = () => {
   const handleDeleteUser = async () => {
     console.log("delete user");
     const response = await deleteUser(userId);
+    if (response) {
+      console.log("User deleted successfully");
+      // Redirect to the users page
+      window.location.href = '/users';
+    } else {
+      console.log("Failed to delete user");
+      // Handle error, show error message, etc.
+    }
   };
 
   const [modalInfo, setModalInfo] = useState<{
@@ -118,7 +136,7 @@ const profilPageID: FC = () => {
     loadBooks("none");
     loadGenres();
     loadUsersList();
-  }, []);
+  }, [userToShow, books, genres, users]);
   if(error){
     return <div>Error: {error}</div>
   }
@@ -126,6 +144,9 @@ const profilPageID: FC = () => {
     <div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
       {userToShow && (
         <>
+          <div className="flex justify-center">
+            <h1 className="text-2xl font-bold">{userToShow.userName} {userToShow.userLastName}</h1>
+          </div>
           {/* Display favoriteBook */}
           <div className="px-8 py-4">
             <span className="text-gray-700 block text-center">Favorite Book:</span>
@@ -257,7 +278,9 @@ const profilPageID: FC = () => {
               : modalInfo.category === "friends" && modalInfo.action === "Delete"
               ? userToShow.friends
               : modalInfo.category === "friends" && modalInfo.action === "Add"
-              ? users.map((user) => `${user.userName} ${user.userLastName}`)
+              ? users
+                  .filter(user => userToShow.friends ? user.id !== userId && !userToShow.friends.includes(`${user.userName} ${user.userLastName}`):null)
+                  .map(user => `${user.userName} ${user.userLastName}`)
               : modalInfo.category === "favoriteGenres" && modalInfo.action === "Delete"
               ? (userToShow.favoriteGenres ? userToShow.favoriteGenres.map((genre) => findName(genre, genres)): [])
               : modalInfo.category === "favoriteGenres" && modalInfo.action === "Add"
@@ -269,7 +292,8 @@ const profilPageID: FC = () => {
             // Handle form submission based on the category (ownedBooks, favoriteBook, etc.)
             if (category === 'ownedBooks') {
               // Logic for handling ownedBooks category
-              handleUpdate(category, action, selectedValue);
+              const bookId = findId(selectedValue, books);
+              handleUpdate(category, action, bookId);
             } else if (category === 'favoriteBook') {
               // Logic for handling favoriteBook category
               handleUpdate(category, action, selectedValue);
@@ -279,7 +303,8 @@ const profilPageID: FC = () => {
               friendId ? handleUpdate(category, action, friendId): null;
             } else if (category === 'favoriteGenres') {
               // Logic for handling other categories
-              handleUpdate(category, action, selectedValue);
+              const genreId = findId(selectedValue, genres);
+              handleUpdate(category, action, genreId);
             }
           }}
         />

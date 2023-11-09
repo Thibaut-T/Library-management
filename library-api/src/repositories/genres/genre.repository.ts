@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Genre, User } from 'library-api/src/entities';
+import { Genre, GenreId, User } from 'library-api/src/entities';
 import { GenreRepositoryOutput } from 'library-api/src/repositories/genres/genre.repository.type';
 import { adaptGenreEntityToGenreModel } from 'library-api/src/repositories/genres/genre.utils';
 import { DataSource, Repository } from 'typeorm';
@@ -16,7 +16,25 @@ export class GenreRepository extends Repository<Genre> {
       relations: { users: true},
     });
     const adpatedGenres = genres.map(adaptGenreEntityToGenreModel);
-    //console.log(adpatedGenres.map((genre) => genre.users[0] ? `${genre.name} - ${genre.users.map((user)=> user)}` : 'no users'));
+    /*console.log(adpatedGenres.map((genre) => {
+      if (genre.users.length > 0) {
+        const usersString = genre.users.map(user => user.userName).join(', ');
+        return `${genre.name} - ${usersString}`;
+      } else {
+        return 'no users';
+      }
+    }));*/
     return adpatedGenres;
+  }
+
+  public async updateGenreUsers(genreId: GenreId, user: User): Promise<GenreRepositoryOutput> {
+    const genre = await this.findOne({ where: { id: genreId },
+      relations: { users: true},});
+    const checkUser = genre.users.find((genreUser) => genreUser.id === user.id);
+    if(!checkUser) {
+      genre.users.push(user);
+      await this.save(genre);
+    }
+    return adaptGenreEntityToGenreModel(genre);
   }
 }
