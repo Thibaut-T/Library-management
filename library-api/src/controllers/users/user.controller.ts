@@ -39,4 +39,11 @@ export class UserController {
         const updatedUser = await this.userUseCases.updateUser(id, user);
         return updatedUser;
     }
+
+    @Post('/:id/friends/:friend')
+    public async addFriend(@Param('id') id: UserId, @Param('friend') friend: UserId): Promise<PlainUserModel> {
+        console.log("User to update: ", id)
+        const updatedUser = await this.userUseCases.addFriend(id, friend);
+        return updatedUser;
+    }
 }

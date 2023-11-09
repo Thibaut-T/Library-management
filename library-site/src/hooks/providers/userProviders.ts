@@ -148,3 +148,30 @@ type UpdateUserProvider = {
 export const useUpdateUserProvider = (): UpdateUserProvider => ({
     useUpdateUser,
 });
+
+//Provider for adding a friend to a user
+type UseAddFriendProvider = {
+    addFriend: (userId: string, friend: string) => void;
+};
+
+export const useAddFriend = (): UseAddFriendProvider => {
+    const addFriend = (userId: string, friend: string): void => {
+        axios
+            .post(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}/friends/${friend}`)
+            .then((data) => console.log(data))
+            .catch((err) => {
+                console.error(err)
+                throw err;
+            });
+        
+    };
+    return { addFriend };
+}
+
+type AddFriendProvider = {
+    useAddFriend: () => UseAddFriendProvider;
+};
+
+export const useAddFriendProvider = (): AddFriendProvider => ({
+    useAddFriend,
+});

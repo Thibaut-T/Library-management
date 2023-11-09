@@ -4,7 +4,7 @@ import { useState, useEffect, FC} from "react";
 import { useParams } from 'next/navigation';
 import Modal from "@/app/components/modal";
 import { findName, findId } from "@/utils/findingFunctions";
-import { useUpdateUserProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders } from "@/hooks";
+import { useUpdateUserProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders } from "@/hooks";
 import { PlainUserModel, UserUpdateModel } from "@/models";
 
 interface DropdownProps {
@@ -51,6 +51,9 @@ const profilPageID: FC = () => {
   const { useDeleteBook } = useDeleteBookProviders();
   const { deleteBook } = useDeleteBook();
 
+  const { useAddFriend } = useAddFriendProvider();
+  const { addFriend } = useAddFriend();
+
   const { useUpdateUser } = useUpdateUserProvider();
   const { updateUser } = useUpdateUser();
   const [userToUpdate, setUserToUpdate] = useState<PlainUserModel>();
@@ -67,18 +70,19 @@ const profilPageID: FC = () => {
       userName: userToShow.userName,
       userLastName: userToShow.userLastName,
     };
-    if(action === "Add"){
+    if(action === "Add" || action == "Change" && cat != "friends"){
       cat === "favoriteBook" ?
       update.newFavoriteBook = findId(value, books)
       : cat === "ownedBooks" ?
       update.newOwnedBook = findId(value, books)
-      : cat == "friends" ?
-      update.newFriend = value
       : cat == "favoriteGenres" ?
       update.newFavoriteGenre = findId(value, genres)
       : null;
       console.log("User: ", userToShow, " update: ", update);
       const updatedUser = await updateUser(update);
+    }
+    else if(action === "Add" && cat === "friends"){
+      await addFriend(userId, value)
     }
     else if(action === "Delete"){
       const bookId = findId(value, books);
@@ -118,7 +122,6 @@ const profilPageID: FC = () => {
   if(error){
     return <div>Error: {error}</div>
   }
-  //console.log("User to show: ", userToShow) 
   return (
     <div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
       {userToShow && (
@@ -272,7 +275,8 @@ const profilPageID: FC = () => {
               handleUpdate(category, action, selectedValue);
             } else if (category === 'friends') {
               // Logic for handling other categories
-              handleUpdate(category, action, selectedValue);
+              const friendId = users.find((user) => `${user.userName} ${user.userLastName}` === selectedValue)?.id;
+              friendId ? handleUpdate(category, action, friendId): null;
             } else if (category === 'favoriteGenres') {
               // Logic for handling other categories
               handleUpdate(category, action, selectedValue);

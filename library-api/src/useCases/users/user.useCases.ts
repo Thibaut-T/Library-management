@@ -31,4 +31,8 @@ export class UserUseCases {
     public async updateUser(id: UserId, user: PlainUserModel): Promise<PlainUserModel> {
         return this.userRepository.updateUser(id, user);
     }
+
+    public async addFriend(id: UserId, friend: UserId): Promise<PlainUserModel> {
+        return this.userRepository.addFriend(id, friend);
+    }
 };

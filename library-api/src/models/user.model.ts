@@ -21,7 +21,6 @@ export type UserUpdateModel = {
     id: UserId;
     userName?: string;
     userLastName?: string;
-    newFriend?: string;
     newFavoriteGenre?: GenreId;
     newFavoriteBook?: BookId;
     newOwnedBook?: BookId;

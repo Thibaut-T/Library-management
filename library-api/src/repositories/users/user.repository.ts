@@ -101,34 +101,67 @@ export class UserRepository extends Repository<User> {
      */
 
     public async updateUser(id: UserId, user: UserUpdateModel): Promise<PlainUserModel> {
-        console.log("user : ", user)
         const userToUpdate = await this.findOne({ where: { id },
             relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
         });
         if(!userToUpdate) {
             throw new Error("User not found");
         }
-        console.log("user to update at start: ", userToUpdate)
         userToUpdate.userName = user.userName;
         userToUpdate.userLastName = user.userLastName;
         const newFavoriteBook = await this.bookRepository.findOne({ where: {id: user.newFavoriteBook}});
 
         const newFavoriteGenre = await this.genreRepository.findOne({ where: {id: user.newFavoriteGenre}});
+        //const checkFavoriteGenre = userToUpdate.favoriteGenres.find(genre => genre.id === newFavoriteGenre.id);
+
         const newOwnedBook = await this.bookRepository.findOne({ where: {id: user.newOwnedBook}});
-        console.log("new owned book: ", newOwnedBook)
-        //newFavoriteBook ? userToUpdate.favoriteBook = newFavoriteBook : null;
-        //newFavoriteGenre ? userToUpdate.favoriteGenres.push(newFavoriteGenre) : null;
-        if (newOwnedBook) {
+        const checkOwnedBook = userToUpdate.ownedBooks.find(book => book.id === newOwnedBook.id);
+
+        if(newFavoriteBook != userToUpdate.favoriteBook) {
+            userToUpdate.favoriteBook = newFavoriteBook;
+            console.log("new favorite book: ", newFavoriteBook)
+        }
+        /*if (!checkFavoriteGenre) {
+            userToUpdate.favoriteGenres.push(newFavoriteGenre);
+        }*/
+        if (!checkOwnedBook) {
             userToUpdate.ownedBooks.push(newOwnedBook);
         }
-        console.log("user to update at : ", userToUpdate)
-        await this.save(userToUpdate);
         if (newOwnedBook) {
             await this.bookRepository.updateBookOwners(newOwnedBook.id, id);
         }
+        await this.save(userToUpdate)
         const updatedUser = await this.findOne({ where: { id },
             relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
         });
         return adaptUserEntityToPlainUserModel(updatedUser);
+    };
+
+    /**
+     * Add a friend to a user
+     * @param id The user id
+     * @param friend The friend to add
+     */
+
+    public async addFriend(id: UserId, friend: UserId): Promise<PlainUserModel> {
+        const user = await this.findOne({ where: { id: id},
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        if(!user) {
+            throw new Error("User not found");
+        }
+        const friendToAdd = await this.findOne({ where: { id: friend },
+            relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
+        });
+        if(!friendToAdd) {
+            throw new Error("Friend not found");
+        }
+        await user.friends.push(friendToAdd);
+        await friendToAdd.friends.push(user);
+        await this.save(user);
+        await this.save(friendToAdd);
+        console.log("user after adding friend: ", user.friends)
+        console.log("friend after adding friend: ", friendToAdd.friends)
+        return adaptUserEntityToPlainUserModel(user);
     };
 };
