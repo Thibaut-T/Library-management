@@ -1,5 +1,5 @@
 import { GenrePresenter } from './genre.presenter';
-import { GenreModel } from 'library-api/src/models';
+import { GenreModel } from '../../models';
 import { GenreId } from '../../entities/Genre';
 
 const genreId1: GenreId = "123" as GenreId;

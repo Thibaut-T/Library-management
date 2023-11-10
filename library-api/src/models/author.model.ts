@@ -1,4 +1,4 @@
-import { Author, AuthorId, Book } from 'library-api/src/entities';
+import { Author, AuthorId, Book } from '../entities';
 
 export type PlainAuthorModel = {
   id: AuthorId;
@@ -11,7 +11,7 @@ export type AuthorModel = {
   id: AuthorId;
   firstName: string;
   lastName: string;
-  photuUrl?: string;
+  photoUrl?: string;
   books?: Book[];
 };
 

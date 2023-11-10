@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Delete, Put, Param, Body } from '@nestjs/common';
-import { UserId, GenreId } from 'library-api/src/entities';
-import { PlainUserModel, UserModel } from 'library-api/src/models';
-import { UserUseCases } from 'library-api/src/useCases/users/user.useCases';
+import { UserId, GenreId } from '../../entities';
+import { PlainUserModel, UserModel } from '../../models';
+import { UserUseCases } from '../../useCases/users/user.useCases';
 
 @Controller('users')
 export class UserController {

@@ -2,8 +2,8 @@ import { Author } from './Author';
 import { Book } from './Book';
 import { BookGenre } from './BookGenre';
 import { Genre } from './Genre';
-import { User } from 'library-api/src/entities/User';
-import { Comment } from 'library-api/src/entities/Comment';
+import { User } from './User';
+import { Comment } from './Comment';
 
 
 export * from './Author';

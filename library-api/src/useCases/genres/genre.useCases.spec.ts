@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GenreUseCases } from './genre.useCases';
 import { GenreRepository } from '../../repositories';
 import { GenreUseCasesOutput } from '../../useCases/genres/genre.useCases.type';
-import { GenreId } from 'library-api/src/entities';
+import { GenreId } from '../../entities';
 
 describe('GenreUseCases', () => {
   let genreUseCases: GenreUseCases;

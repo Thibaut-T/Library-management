@@ -1,5 +1,5 @@
-import { GenreId } from 'library-api/src/entities';
-import { GenreModel } from 'library-api/src/models';
+import { GenreId } from '../../entities';
+import { GenreModel } from '../../models';
 
 export class GenrePresenter {
   id: GenreId;

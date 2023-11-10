@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ca } from 'date-fns/locale';
-import { BookPresenter } from 'library-api/src/controllers/books/book.presenter';
-import { BookId, UserId } from 'library-api/src/entities';
-import { bookToAdd, AuthorModel} from 'library-api/src/models';
-import { BookRepository, AuthorRepository, BookGenreRepository } from 'library-api/src/repositories';
-import { AuthorUseCases } from 'library-api/src/useCases/authors/author.useCases';
+import { BookPresenter } from '../../controllers/books/book.presenter';
+import { BookId, UserId } from '../../entities';
+import { bookToAdd, AuthorModel} from '../../models';
+import { BookRepository, AuthorRepository, BookGenreRepository } from '../../repositories';
+import { AuthorUseCases } from '../../useCases/authors/author.useCases';
 import {
   BookUseCasesOutput,
   PlainBookUseCasesOutput,

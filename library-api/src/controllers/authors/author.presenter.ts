@@ -1,5 +1,5 @@
-import { AuthorId } from 'library-api/src/entities';
-import { PlainAuthorModel } from 'library-api/src/models';
+import { AuthorId } from '../../entities';
+import { PlainAuthorModel } from '../../models';
 
 export class PlainAuthorPresenter {
   id: AuthorId;

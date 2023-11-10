@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GenreController } from './genre.controller';
 import { GenrePresenter } from './genre.presenter';
 import { GenreUseCases } from '../../useCases';
-import { GenreId } from 'library-api/src/entities';
+import { GenreId } from '../../entities';
 
 describe('GenreController', () => {
   let controller: GenreController;

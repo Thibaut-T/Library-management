@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthorRepository } from 'library-api/src/repositories/authors/author.repository';
-import { BookRepository } from 'library-api/src/repositories/books/book.repository';
-import { GenreRepository } from 'library-api/src/repositories/genres/genre.repository';
-import { BookGenreRepository } from 'library-api/src/repositories/bookGenres/bookGenre.repository';
-import { UserRepository } from 'library-api/src/repositories/users/user.repository';
-import { CommentRepository } from 'library-api/src/repositories/comments/comment.repository';
+import { AuthorRepository } from '../repositories/authors/author.repository';
+import { BookRepository } from '../repositories/books/book.repository';
+import { GenreRepository } from '../repositories/genres/genre.repository';
+import { BookGenreRepository } from '../repositories/bookGenres/bookGenre.repository';
+import { UserRepository } from '../repositories/users/user.repository';
+import { CommentRepository } from '../repositories/comments/comment.repository';
 
 const repositories = [AuthorRepository, BookRepository, GenreRepository, BookGenreRepository, UserRepository, CommentRepository];
 

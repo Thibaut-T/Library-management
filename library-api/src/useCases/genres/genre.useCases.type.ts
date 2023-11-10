@@ -1,3 +1,3 @@
-import { GenreModel } from "library-api/src/models";
+import { GenreModel } from "../../models";
 
 export type GenreUseCasesOutput = GenreModel;

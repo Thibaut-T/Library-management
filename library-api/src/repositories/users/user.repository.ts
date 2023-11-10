@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { forwardRef, Inject } from '@nestjs/common';
-import { User, UserId, GenreId } from 'library-api/src/entities';
-import { UserModel, PlainUserModel, UserUpdateModel } from 'library-api/src/models';
+import { User, UserId, GenreId } from '../../entities';
+import { UserModel, PlainUserModel, UserUpdateModel } from '../../models';
 import { CommentRepository } from '../comments/comment.repository';
 import { BookRepository } from '../books/book.repository';
 import { GenreRepository } from '../genres/genre.repository';
 import { DataSource, Repository } from 'typeorm';
-import { adaptUserEntityToPlainUserModel } from 'library-api/src/repositories/users/user.utils';
+import { adaptUserEntityToPlainUserModel } from '../../repositories/users/user.utils';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
