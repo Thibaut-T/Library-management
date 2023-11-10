@@ -5,7 +5,27 @@ import { AuthorModel } from '../../models';
 import { createAuthor } from '../../repositories/authors/author.utils';
 import { BookId, Genre, GenreId, AuthorId, Author } from '../../entities';
 
+const authorModel1: AuthorModel = {
+  id: 'John Doe' as AuthorId,
+  firstName: 'John',
+  lastName: 'Doe',
+  photoUrl: 'http://example.com/john-doe.jpg',
+  books: [],
+};
 
+const auteur1: Author = {
+    id: 'John Doe' as AuthorId,
+    firstName: 'John',
+    lastName: 'Doe',
+    photoUrl: 'http://example.com/john-doe.jpg',
+    books: [],
+    hasId: () => true,
+    remove: () => Promise.resolve(this),
+    softRemove: () => Promise.resolve(this),
+    recover: () => Promise.resolve(this),
+    reload: () => Promise.resolve(this),
+    save: () => Promise.resolve(this),
+  };
 
 describe('AuthorRepository', () => {
   let authorRepository: AuthorRepository;
@@ -32,55 +52,31 @@ describe('AuthorRepository', () => {
 
   it('should add an author to the database', async () => {
 
-    const authorModel1: AuthorModel = {
-      id: 'John Doe' as AuthorId,
-      firstName: 'John',
-      lastName: 'Doe',
-      photoUrl: 'http://example.com/john-doe.jpg',
-      books: [],
-    };
-
-    const auteur1: Author = {
-        id: 'John Doe' as AuthorId,
-        firstName: 'John',
-        lastName: 'Doe',
-        photoUrl: 'http://example.com/john-doe.jpg',
-        books: [],
-        hasId: () => true,
-        remove: () => Promise.resolve(this),
-        softRemove: () => Promise.resolve(this),
-        recover: () => Promise.resolve(this),
-        reload: () => Promise.resolve(this),
-        save: () => Promise.resolve(this),
-      };
   
-    // Mock the findOne method to simulate author not existing in the database
     jest.spyOn(authorRepository, 'findOne').mockResolvedValue(auteur1);
   
-    // Mock the save method to simulate saving the author
     jest.spyOn(authorRepository, 'save').mockResolvedValue(auteur1);
   
     const result = await authorRepository.addAuthor(authorModel1);
   
     expect(result).toEqual(auteur1);
   });
-  
+  it('should add a new author to the database if it does not exist', async () => {
+
+    authorRepository.findOne = jest.fn().mockResolvedValue(null);
+
+    authorRepository.save = jest.fn().mockImplementation(async (author: AuthorModel) => {
+      return author;
+    });
+
+
+    const result = await authorRepository.addAuthor(authorModel1);
+
+    expect(authorRepository.findOne).toHaveBeenCalledWith({ where: { firstName: authorModel1.firstName, lastName: authorModel1.lastName } });
+    expect(authorRepository.save).toHaveBeenCalledWith(authorModel1);
+  });
 
   it('should get all authors', async () => {
-    // Mock the find method to simulate retrieving a list of authors
-    const auteur1: Author = {
-        id: 'John Doe' as AuthorId,
-        firstName: 'John',
-        lastName: 'Doe',
-        photoUrl: 'http://example.com/john-doe.jpg',
-        books: [],
-        hasId: () => true,
-        remove: () => Promise.resolve(this),
-        softRemove: () => Promise.resolve(this),
-        recover: () => Promise.resolve(this),
-        reload: () => Promise.resolve(this),
-        save: () => Promise.resolve(this),
-      };
     const auteur2: Author = {
         id: 'Sam Samy' as AuthorId,
         firstName: 'Sam',
