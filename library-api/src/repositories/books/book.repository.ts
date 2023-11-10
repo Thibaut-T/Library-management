@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundError, BadRequestError } from '../../common/errors';
+import { NotFoundError } from '../../common/errors';
 import { Book, BookId, UserId} from '../../entities';
 import { bookToAdd, AuthorModel} from '../../models';
 import {
   BookRepositoryOutput,
-  PlainBookRepositoryOutput,
 } from '../../repositories/books/book.repository.type';
 import {
   adaptBookEntityToBookModel,
-  adaptBookEntityToPlainBookModel,
   createBookUtils
 } from '../../repositories/books/book.utils';
 import { UserRepository } from '../users/user.repository';
-import { AuthorRepository } from '../authors/author.repository';
-import { BookGenreRepository } from '../bookGenres/bookGenre.repository';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -124,7 +120,10 @@ export class BookRepository extends Repository<Book> {
    */
   public async deleteBook(id: BookId, userId: UserId): Promise<BookRepositoryOutput> {
     const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true, owners: true }});
-
+    if(userId == "none") {
+      await this.delete(id);
+      return adaptBookEntityToBookModel(book);
+    }
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }

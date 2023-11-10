@@ -1,15 +1,14 @@
-"use client"
-import Link from 'next/link';
-import React, { useState } from 'react';
+"use client";
+import Link from "next/link";
+import React, { useState } from "react";
 
 const SignInForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here  send data to the server
-    console.log('Email:', email, 'Password:', password);
   };
 
   return (
@@ -18,7 +17,10 @@ const SignInForm = () => {
         <h2 className="text-2xl font-bold text-center mb-4">Sign In</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -31,7 +33,10 @@ const SignInForm = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -44,13 +49,13 @@ const SignInForm = () => {
             />
           </div>
           <div className="mb-4">
-            <Link href='/'>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-            >
-              Sign In
-            </button>
+            <Link href="/">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+              >
+                Sign In
+              </button>
             </Link>
           </div>
         </form>

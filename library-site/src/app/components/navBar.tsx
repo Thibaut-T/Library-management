@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
 
 const Navbar = () => {
   return (
@@ -22,7 +22,7 @@ const Navbar = () => {
             Authors
           </p>
         </Link>
-        
+
         <Link href="/users">
           <p className="cursor-pointer text-3xl text-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
             Users
@@ -30,7 +30,7 @@ const Navbar = () => {
         </Link>
         <Link href="/api">
           <p className="cursor-pointer text-3xl text-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
-            API 
+            API
           </p>
         </Link>
       </div>

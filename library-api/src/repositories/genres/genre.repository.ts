@@ -17,14 +17,7 @@ export class GenreRepository extends Repository<Genre> {
       relations: { users: true},
     });
     const adpatedGenres = genres.map(adaptGenreEntityToGenreModel);
-    /*console.log(adpatedGenres.map((genre) => {
-      if (genre.users.length > 0) {
-        const usersString = genre.users.map(user => user.userName).join(', ');
-        return `${genre.name} - ${usersString}`;
-      } else {
-        return 'no users';
-      }
-    }));*/
+    
     return adpatedGenres;
   }
 

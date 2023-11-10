@@ -26,7 +26,6 @@ export class AuthorRepository extends Repository<Author> {
       const authorAdded = await this.findOne({ where: { firstName: author.firstName, lastName: author.lastName } });
       return authorAdded;
     }
-    console.log("author: ", author);
     return authorExists;
   };
 
@@ -36,5 +35,35 @@ export class AuthorRepository extends Repository<Author> {
   public async getAllAuthors(): Promise<AuthorModel[]> {
     const authors = await this.find();
     return authors; 
+  };
+
+  /**
+   * Get an author by id
+   */
+  public async getAuthorById(id: AuthorId): Promise<AuthorModel> {
+    const author = await this.findOne({ where: { id },
+    relations: ['books']});
+    return author;
+  }
+
+  /**
+   * Delete an author
+   */
+  public async deleteAuthor(id: AuthorId): Promise<void> {
+    await this.delete(id);
+  }
+
+  /**
+   * Update an author
+   */
+  public async updateAuthor(id: AuthorId, author: authorToAdd): Promise<AuthorModel> {
+    const updatedAuthor = await this.findOne({ where: { id: id },
+    relations: ['books']});
+    if(!updatedAuthor) {
+      throw new Error(`Author with id ${id} not found`);
+    }
+    updatedAuthor.firstName = author.firstName;
+    updatedAuthor.lastName = author.lastName;
+    return await this.save(updatedAuthor);;
   };
 }

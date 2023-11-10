@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ca } from 'date-fns/locale';
-import { BookPresenter } from '../../controllers/books/book.presenter';
-import { BookId, UserId } from '../../entities';
-import { bookToAdd, AuthorModel} from '../../models';
-import { BookRepository, AuthorRepository, BookGenreRepository } from '../../repositories';
-import { AuthorUseCases } from '../../useCases/authors/author.useCases';
+import { BookId, UserId } from 'library-api/src/entities';
+import { bookToAdd} from 'library-api/src/models';
+import { BookRepository, AuthorRepository, BookGenreRepository } from 'library-api/src/repositories';
 import {
   BookUseCasesOutput,
-  PlainBookUseCasesOutput,
-} from '../../useCases/books/book.useCases.type';
+} from 'library-api/src/useCases/books/book.useCases.type';
 
 @Injectable()
 export class BookUseCases {
@@ -43,7 +39,6 @@ export class BookUseCases {
    * @throws 400: book's data is invalid
    */
   public async addBook(newBook: bookToAdd, userId: string): Promise<BookUseCasesOutput> {
-    console.log("book received: ", newBook, "from user: ", userId);
     if (!newBook.name) {
       throw new Error('Book name is required');
     }

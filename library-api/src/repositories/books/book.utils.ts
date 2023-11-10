@@ -1,4 +1,4 @@
-import { Book, BookId, Author} from '../../entities';
+import { Book,Author} from 'library-api/src/entities';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,

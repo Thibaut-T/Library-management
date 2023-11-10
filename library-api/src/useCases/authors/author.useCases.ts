@@ -17,4 +17,15 @@ export class AuthorUseCases {
         return this.AuthorRepository.getAllAuthors();
     }
 
+    public async getAuthorById(id: AuthorId): Promise<AuthorModel> {
+        return this.AuthorRepository.getAuthorById(id);
+    }
+
+    public async deleteAuthor(id: AuthorId): Promise<void> {
+        return this.AuthorRepository.deleteAuthor(id);
+    }
+
+    public async updateAuthor(id: AuthorId, author: authorToAdd): Promise<AuthorModel> {
+        return this.AuthorRepository.updateAuthor(id, author);
+    }
 }

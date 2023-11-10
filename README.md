@@ -22,6 +22,7 @@ Introducing 'Library-management' – a feature-rich web application built with R
 ### Installing
 
 * Clone the repository
+* npm install swagger-ui-react
 
 ### Executing program
 
@@ -39,14 +40,19 @@ Introducing 'Library-management' – a feature-rich web application built with R
 
 ## Authors
 
-Tournemaine Thibaut 
-Marliot Paul
-Quivron Martin
-Eutamene Adel
+* Tournemaine Thibaut
+* Marliot Paul
+* Quivron Martin 
+* Eutamene Adel
 
-## Version History
+## Missing feature 
 
+* Picture for the authors 
+* The possibility in authors/id to add or remove books 
+* Commentary in book/id
 
-* 0.1
-    * Initial Release
+## Comment
+
+* Connect into Paul Marliot in the Home Page 
+* The first 5 authors are not deletable to keep a base of authors 
 

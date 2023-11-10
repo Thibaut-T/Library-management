@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundError, BadRequestError } from '../../common/errors';
 import { BookGenre } from '../../entities';
 import { Book, BookGenreId, GenreId } from '../../entities';
 import { GenreRepository } from '../../repositories';

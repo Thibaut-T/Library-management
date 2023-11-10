@@ -1,5 +1,5 @@
-import { User, UserId } from '../../entities';
-import { UserModel, PlainUserModel } from '../../models';
+import {User} from 'library-api/src/entities';
+import {PlainUserModel } from 'library-api/src/models';
 
 export const adaptUserEntityToPlainUserModel = (user: User,): PlainUserModel => ({
     ...user,
