@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { PlainBookModel, bookToAdd } from '@/models';
+import { PlainBookModel, bookToAdd, PlainAuthorModel } from '@/models';
 import { adaptToPlainBook } from '@/utils/convertingFunctions';
+import { Palanquin } from 'next/font/google';
 
 type UseListBooksProvider = {
   books: PlainBookModel[];
@@ -14,7 +15,7 @@ export const useListBooks = (): UseListBooksProvider => {
 
   const fetchBooks = (userId: string): void => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/books/${userId}`)
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/books/user/${userId}`)
       .then((data) => setBooks(data.data))
       .catch((err) => console.error(err));
   };
@@ -28,6 +29,47 @@ type BookProviders = {
 export const useBooksProviders = (): BookProviders => ({
   useListBooks,
 });
+
+//Provider to get a single book
+type UseGetBookProvider = {
+  author: PlainAuthorModel;
+  book: PlainBookModel;
+  load: (id: string) => void;
+};
+
+export const useGetBook = (): UseGetBookProvider => {
+  const [author, setAuthor] = useState<PlainAuthorModel>({
+    id: '',
+    firstName: '',
+    lastName: '',
+    photoUrl: '',
+  });
+  const [book, setBook] = useState<PlainBookModel>({
+    id: '',
+    name: '',
+    writtenOn: new Date(),
+    author: author,
+    genres: [],
+  });
+  const fetchBookById = (id: string): void => {
+    console.log('fetching book: ', id);
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/books/${id}`)
+      .then((data) => setBook(data.data))
+      .catch((err) => console.error(err));
+  };
+  return { author, book, load: fetchBookById };
+}
+
+type GetBookProviders = {
+  useGetBook: () => UseGetBookProvider;
+};
+
+export const useGetBookProviders = (): GetBookProviders => ({
+  useGetBook,
+});
+
+
 
 type UseAddBookProvider = {
   book: bookToAdd;

@@ -257,7 +257,7 @@ const BooksPage: FC = (): ReactElement => {
   }
     <div className="flex flex-wrap justify-start">
   {sortedBooks.map((book) => (
-    <div className="max-w-sm flex flex-col rounded overflow-hidden shadow-lg bg-blue-100 m-4 rounded-lg" key={book.id} onClick={() => console.log(book.id)}>
+    <div className="max-w-sm flex flex-col rounded overflow-hidden shadow-lg bg-blue-100 m-4 rounded-lg" key={book.id} onClick={() => window.location.href = `/books/${book.id}`}>
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{book.name}</div>
         <p className="text-gray-700 text-base">Super livre franchement lisez le.</p>
