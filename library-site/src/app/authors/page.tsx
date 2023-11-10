@@ -12,7 +12,7 @@ import { useSortByNameInv } from "@/utils/sortingFunctions";
 import { PlainBookModel, authorToAdd } from "@/models";
 import { useUserContext } from "@/contexts";
 
-const BooksPage: FC = (): ReactElement => {
+const AuthorsPage: FC = (): ReactElement => {
   const { userId } = useUserContext();
 
   const { useListBooks } = useBooksProviders();
@@ -213,4 +213,4 @@ const BooksPage: FC = (): ReactElement => {
   );
 };
 
-export default BooksPage;
+export default AuthorsPage;
