@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "Book API",
-    "description": "A simple API for managing authors, books, genres, and comments"
+    "description": "A simple API for managing authors, books, users"
   },
   "paths": {
     "/authors": {
@@ -15,7 +15,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthorModel"
+              "$ref": "#/definitions/Author"
             }
           }
         ],
@@ -23,7 +23,7 @@
           "200": {
             "description": "Author added",
             "schema": {
-              "$ref": "#/definitions/AuthorModel"
+              "$ref": "#/definitions/Author"
             }
           }
         }
@@ -36,9 +36,91 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/AuthorModel"
+                "$ref": "#/definitions/Author"
               }
             }
+          }
+        }
+      }
+    },"/authors/{authorId}": {
+      "delete": {
+        "summary": "Delete an author",
+        "parameters": [
+          {
+            "name": "authorId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the author to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author deleted successfully"
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an author's information",
+        "parameters": [
+          {
+            "name": "authorId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the author to update"
+          },
+          {
+            "name": "author",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Author"
+            },
+            "description": "The updated author data"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author updated successfully",
+            "schema": {
+              "$ref": "#/definitions/Author"
+            }
+          },
+          "404": {
+            "description": "Author not found"
+          }
+        }
+      }
+    },
+    "/authors/{authorId}/books/{bookId}": {
+      "delete": {
+        "summary": "Remove a book from an author's list of books",
+        "parameters": [
+          {
+            "name": "authorId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the author"
+          },
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the book to remove"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book removed from author's list successfully"
+          },
+          "404": {
+            "description": "Author or book not found"
           }
         }
       }
@@ -80,6 +162,48 @@
         }
       }
     },
+    "/books/{bookId}": {
+      "delete": {
+        "summary": "Delete a book",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the book to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book deleted successfully"
+          },
+          "404": {
+            "description": "Book not found"
+          }
+        }
+      }
+    }, "/books/{id}": {
+      "get": {
+        "summary": "Get a book by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book if found",
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          },
+          "404": {
+            "description": "Book with this ID was not found"
+          }}}},
     "/bookGenres": {
       "get": {
         "summary": "Get all bookGenres",
@@ -122,6 +246,27 @@
           }
         }
       }
+    },"/bookGenres/{genreId}": {
+      "delete": {
+        "summary": "Delete a book genre",
+        "parameters": [
+          {
+            "name": "genreId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the genre to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Genre deleted successfully"
+          },
+          "404": {
+            "description": "Genre not found"
+          }
+        }
+      }
     },
     "/genres": {
       "get": {
@@ -132,7 +277,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/GenreRepositoryOutput"
+                "$ref": "#/definitions/Genre"
               }
             }
           }
@@ -160,33 +305,12 @@
           "200": {
             "description": "The updated genre",
             "schema": {
-              "$ref": "#/definitions/GenreRepositoryOutput"
+              "$ref": "#/definitions/Genre"
             }
           }
         }
       }
     },
-    "/books/{id}": {
-      "get": {
-        "summary": "Get a book by its ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Book if found",
-            "schema": {
-              "$ref": "#/definitions/Book"
-            }
-          },
-          "404": {
-            "description": "Book with this ID was not found"
-          }}}},
     "/users": {
       "get": {
         "summary": "Get all users",
@@ -220,6 +344,199 @@
             "schema": {
               "$ref": "#/definitions/User"
             }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Get all the informations about a user with he's ID ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User if found",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User with this ID was not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "User with this ID was not found"
+          }
+        }
+      },
+      
+      "put": {
+        "summary": "Update a user's favorite books, books owned, friend list, and favorite genres",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user to update"
+          },
+          {
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            },
+            "description": "The user data to update"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "User with this ID was not found"
+          }
+        }
+      }
+    },"/users/{id}/favoriteBooks/{bookId}": {
+      "delete": {
+        "summary": "Delete a book from a user's favorite books",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user"
+          },
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the book to delete from favorites"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book removed from favorites successfully"
+          },
+          "404": {
+            "description": "User or book not found"
+          }
+        }
+      }
+    },
+    "/users/{id}/ownedBooks/{bookId}": {
+      "delete": {
+        "summary": "Delete a book from a user's owned books",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user"
+          },
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the book to delete from owned books"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book removed from owned books successfully"
+          },
+          "404": {
+            "description": "User or book not found"
+          }
+        }
+      }
+    },
+    "/users/{id}/friendList/{friendId}": {
+      "delete": {
+        "summary": "Remove a friend from a user's friend list",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user"
+          },
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the friend to remove from friend list"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Friend removed from friend list successfully"
+          },
+          "404": {
+            "description": "User or friend not found"
+          }
+        }
+      }
+    },
+    "/users/{id}/favoriteGenres/{genreId}": {
+      "delete": {
+        "summary": "Remove a genre from a user's favorite genres",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the user"
+          },
+          {
+            "name": "genreId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the genre to remove from favorite genres"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Genre removed from favorite genres successfully"
+          },
+          "404": {
+            "description": "User or genre not found"
           }
         }
       }

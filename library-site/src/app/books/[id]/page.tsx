@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useDeleteFavoriteGenreProvider, useUpdateUserProvider, useDeleteFriendProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders, useGetBookProviders } from "@/hooks";
 import { PlainUserModel, UserUpdateModel, GenreModel, PlainBookModel } from "@/models";
 import { useUserContext } from '@/contexts';
+import Link from 'next/link';
 
 interface DropdownProps {
   options: string[];
@@ -143,14 +144,41 @@ const BooksDetailsPage: FC = () => {
     return <div>Error: {error}</div>
   }
   return (
-    <div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
+<div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
+<div className="flex justify-end">
+  <nav className="text-blue-700" aria-label="Breadcrumb">
+    <ul className="flex space-x-2">
+      <li>
+        <Link href="/">
+          <p className="cursor-pointer text-xl font-bold transition duration-500 ease-in-out transform hover:-translate-y-1">
+            Home
+          </p>
+        </Link>
+      </li>
+      <li>/</li>
+      <li>
+        <Link href="/books">
+          <p className="cursor-pointer text-xl font-bold transition duration-500 ease-in-out transform hover:-translate-y-1">
+            Books
+          </p>
+        </Link>
+      </li>
+      <li>/</li>
+      <li>
+        <p className=" text-xl font-bold transition duration-500 ease-in-out ">
+          {bookToShow?.name}
+        </p>
+      </li>
+    </ul>
+  </nav>
+</div>
       {bookToShow && (
         <>
           <div className="flex justify-center">
             <h1 className="text-2xl font-bold">Title: {bookToShow.name}</h1>
           </div>
           {/* Display Author */}
-          <div className="px-8 py-4">
+          <div className=" flex flex-col items-center px-8 py-4">
             <span className="text-gray-700 block">Author:</span>
             <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
               {bookToShow.author.firstName} {bookToShow.author.lastName}
@@ -158,7 +186,7 @@ const BooksDetailsPage: FC = () => {
           </div>
           
           {/* Display Genre */}
-          <div className="px-8 py-4">
+          <div className="flex flex-col items-center justify-center px-8 py-4">
             <span className="text-gray-700 block">Owned Books:</span>
             <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
               {bookToShow.genres[0]? bookToShow.genres[0].name: 'No genres'}
@@ -166,7 +194,7 @@ const BooksDetailsPage: FC = () => {
           </div>
           
           {/* Display owners */}
-          <div className="px-8 py-4">
+          <div className=" flex flex-col items-center justify-center px-8 py-4">
             <span className="text-gray-700 block">User who owns this book:</span>
             {/* Display friends items */}
             {owners.length > 0 && owners.map((owner) => (
