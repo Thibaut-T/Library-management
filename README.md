@@ -51,6 +51,8 @@ Introducing 'Library-management' – a feature-rich web application built with R
 * The possibility in authors/id to add or remove books 
 * Commentary in book/id
 
+## Comment
 
-
+* Connect into Paul Marliot in the Home Page 
+* The first 5 authors are not deletable to keep a base of authors 
 
