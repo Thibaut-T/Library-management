@@ -3,7 +3,7 @@ import { BookRepository } from './book.repository';
 import { DataSource } from 'typeorm';
 import { NotFoundError, BadRequestError } from '../../common/errors';
 import { bookToAdd, AuthorModel, BookModel } from '../../models';
-import { GenreId, AuthorId, BookId, Book, Author } from '../../entities';
+import { GenreId, AuthorId, BookId, Book, Author, UserId } from '../../entities';
 
 class MockDataSource {
   createEntityManager() {
@@ -11,21 +11,22 @@ class MockDataSource {
 }
 
 describe('BookRepository', () => {
-  let bookRepository: BookRepository;
+    let bookRepository: BookRepository;
+  
+    beforeEach(async () => {
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          {
+            provide: DataSource,
+            useClass: MockDataSource,
+          },
+          BookRepository,
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: DataSource,
-          useClass: MockDataSource,
-        },
-        BookRepository
-      ],
-    }).compile();
-
-    bookRepository = module.get<BookRepository>(BookRepository);
-  });
+        ],
+      }).compile();
+  
+      bookRepository = module.get<BookRepository>(BookRepository);
+    });
 
   const newBook: bookToAdd = {
     name: 'The Hobbit',
@@ -58,6 +59,9 @@ describe('BookRepository', () => {
     recover: () => Promise.resolve(this),
     reload: () => Promise.resolve(this),
     save: () => Promise.resolve(this),
+    comments: [],
+    usersFavorite: [],
+    owners: [],
   };
   const author: AuthorModel = {
     id: '123' as AuthorId,
@@ -80,6 +84,9 @@ describe('BookRepository', () => {
     recover: () => Promise.resolve(this),
     reload: () => Promise.resolve(this),
     save: () => Promise.resolve(this),
+    comments: [],
+    usersFavorite: [],
+    owners: [],
   };
   const book2 = {
     book: book,
@@ -127,7 +134,7 @@ describe('BookRepository', () => {
 
       jest.spyOn(bookRepository, 'findOne').mockResolvedValue(book);
 
-      await expect(bookRepository.createBook(newBook, author)).rejects.toThrowError(BadRequestError);
+      await expect(bookRepository.createBook(newBook, author, '123' as UserId)).rejects.toThrowError(BadRequestError);
     });
   });
 
@@ -139,7 +146,7 @@ describe('BookRepository', () => {
 
       jest.spyOn(bookRepository, 'save').mockResolvedValueOnce(book1);
       
-      const result = await bookRepository.updateBook(bookId, book1);
+      const result = await bookRepository.updateBookOwners(bookId, '123' as UserId);
 
       expect(result).toEqual(bookId);
       expect(bookRepository.findOne).toHaveBeenCalledWith({ where: { id: bookId } });
@@ -148,7 +155,7 @@ describe('BookRepository', () => {
   
       jest.spyOn(bookRepository, 'findOne').mockResolvedValueOnce(null);
   
-      await expect(bookRepository.updateBook('789' as BookId, book1)).rejects.toThrowError(NotFoundError);
+      await expect(bookRepository.updateBookOwners('789' as BookId, '123' as UserId)).rejects.toThrowError(NotFoundError);
     });
   });
 
@@ -159,7 +166,7 @@ describe('BookRepository', () => {
 
     jest.spyOn(bookRepository, 'remove').mockResolvedValueOnce(book1);
 
-    const deletedBook = await bookRepository.deleteBook('123' as BookId);
+    const deletedBook = await bookRepository.deleteBook('123' as BookId, '123' as UserId);
 
     expect(deletedBook.id).toEqual('123' as BookId);
     });
@@ -167,7 +174,7 @@ describe('BookRepository', () => {
 
       jest.spyOn(bookRepository, 'findOne').mockResolvedValueOnce(null);
   
-      await expect(bookRepository.deleteBook('789' as BookId)).rejects.toThrowError(NotFoundError);
+      await expect(bookRepository.deleteBook('789' as BookId, '789' as UserId)).rejects.toThrowError(NotFoundError);
     });
   });
 });
