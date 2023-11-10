@@ -39,10 +39,10 @@ Introducing 'Library-management' – a feature-rich web application built with R
 
 ## Authors
 
-Tournemaine Thibaut 
-Marliot Paul
-Quivron Martin
-Eutamene Adel
+* Tournemaine Thibaut
+* Marliot Paul
+* Quivron Martin 
+* Eutamene Adel
 
 ## Version History
 

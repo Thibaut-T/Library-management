@@ -7,7 +7,7 @@ import Modal from "@/app/components/modal";
 import { findName, findId } from "@/utils/findingFunctions";
 import { useDeleteFavoriteGenreProvider, useUpdateUserProvider, useDeleteFriendProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders } from "@/hooks";
 import { PlainUserModel, UserUpdateModel } from "@/models";
-
+import Link from 'next/link';
 interface DropdownProps {
   options: string[];
   onChange: (value: string) => void;
@@ -166,6 +166,33 @@ const profilPageID: FC = () => {
   }
   return (
     <><h1 className='text-center text-4xl font-bold my-4 underline'>Welcome to the profil page</h1><div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
+      <div className="flex justify-end">
+  <nav className="text-blue-700" aria-label="Breadcrumb">
+    <ul className="flex space-x-2">
+      <li>
+        <Link href="/">
+          <p className="cursor-pointer text-xl font-bold transition duration-500 ease-in-out transform hover:-translate-y-1">
+            Home
+          </p>
+        </Link>
+      </li>
+      <li>/</li>
+      <li>
+        <Link href="/users">
+          <p className="cursor-pointer text-xl font-bold transition duration-500 ease-in-out transform hover:-translate-y-1">
+            users
+          </p>
+        </Link>
+      </li>
+      <li>/</li>
+      <li>
+        <p className=" text-xl font-bold transition duration-500 ease-in-out ">
+          {userToShow?.userName}
+        </p>
+      </li>
+    </ul>
+  </nav>
+</div>
       {userToShow && (
         <>
           <div className="flex justify-center">
