@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useCreateUserProvider } from '@/hooks';
-import { UserModel } from '@/models';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({

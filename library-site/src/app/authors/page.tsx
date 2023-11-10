@@ -3,14 +3,10 @@ import { FC, ReactElement, useEffect, useState } from "react";
 import {
   useBooksProviders,
   useGenresProviders,
-  useAddBookProviders,
-  useDeleteBookProviders,
   useAuthorsProviders,
   useAddAuthorsProviders
 } from "@/hooks";
 import Link from "next/link";
-import { useSortByNameInv } from "@/utils/sortingFunctions";
-import { PlainBookModel, authorToAdd } from "@/models";
 import { useUserContext } from "@/contexts";
 
 const AuthorsPage: FC = (): ReactElement => {
@@ -198,7 +194,6 @@ const AuthorsPage: FC = (): ReactElement => {
             className="max-w-sm flex flex-col rounded overflow-hidden shadow-lg bg-blue-100 m-4 rounded-lg"
             key={author.id}
           >
-            <img className="w-full" src={""/*`./images/${author.photoUrl}`*/} alt={`Photo de ${author.firstName} ${author.lastName}`}  />
             <div className="px-6 py-4">
               <div className="font-bold text-xl mb-2">{author.firstName} {author.lastName}</div>
             </div>

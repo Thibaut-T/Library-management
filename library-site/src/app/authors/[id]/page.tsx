@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useUpdateUserProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders, useGetBookProviders, useGetAuthorProviders, useDeleteAuthorsProviders, useUpdateAuthorsProviders } from "@/hooks";
 import { PlainUserModel, UserUpdateModel, GenreModel, PlainBookModel, authorToAdd } from "@/models";
-import { useUserContext } from '@/contexts';
 
 interface DropdownProps {
   options: string[];
@@ -88,15 +87,22 @@ const AuthorsDetailsPage: FC = () => {
     const response = await deleteBook(selectedBookToDelete, "none");
     toggleDeleteBook();
   }
-  const handleModifyAuthor = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleModifyAuthor = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const authorToUpdate: authorToAdd = {
       firstName: firstName,
       lastName: lastName,
     };
-    const response = await updateAuthor(authorId, authorToUpdate);
-    toggle();
-
+    updateAuthor(authorId, authorToUpdate)
+      .then(response => {
+        toggle();
+        if (typeof window !== 'undefined') {
+          window.location.href = window.location.href;
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   const handleDeleteAuthor = async () => {
@@ -177,11 +183,7 @@ const AuthorsDetailsPage: FC = () => {
             <h1 className="text-2xl font-bold">{authorToShow.firstName} {authorToShow.lastName}</h1>
           </div>
           {/* Display Photo */}
-          <div className="px-8 py-4">
-            <span className="text-gray-700 block">Photo: </span>
-            <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
-            </div>
-          </div>
+          
           
           {/* Display BookWritten */}
           <div className="px-8 py-4">
@@ -208,7 +210,7 @@ const AuthorsDetailsPage: FC = () => {
           <button
             type="button"
             onClick={() => {
-              const confirmDelete = window.confirm("Do you really want to delete this book ?");
+              const confirmDelete = window.confirm("Do you really want to delete this author ?");
               if (confirmDelete) {
                 handleDeleteAuthor();
               }
@@ -312,7 +314,7 @@ const AuthorsDetailsPage: FC = () => {
             }}
             className="mt-4 px-4 py-2 bg-green-500 text-white rounded"
           >
-            Add a book
+            Add an author
           </button>
           {modalAddBook &&
       <div>
@@ -329,9 +331,9 @@ const AuthorsDetailsPage: FC = () => {
                         </svg>
                       </div>
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                        <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Add a book to the collection</h3>
+                        <h3 className="text-base font-semibold leading-6 text-gray-900" id="modal-title">Add a author to the collection</h3>
                         <div className="mt-2">
-                          <p className="text-sm text-gray-500">Be sure to enter the good informations about the  book you're about to add.</p>
+                          <p className="text-sm text-gray-500">Be sure to enter the good informations about the author you're about to add.</p>
                         </div>
                       </div>
                     </div>
@@ -413,7 +415,7 @@ const AuthorsDetailsPage: FC = () => {
                         </div>
                       </div>
                       <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <button type="submit" className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto">Add book</button>
+                        <button type="submit" className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto">Add author</button>
                         <button type="button" className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" onClick={toggleAddBook}>Cancel</button>
                       </div>
                     </form>
@@ -470,7 +472,7 @@ const AuthorsDetailsPage: FC = () => {
                 type="submit"
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
-                Delete Book
+                Delete book
               </button>
               <button
                 type="button"

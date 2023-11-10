@@ -1,4 +1,4 @@
-import { BookId, User, UserId, GenreId } from 'library-api/src/entities';
+import { BookId,UserId, GenreId } from 'library-api/src/entities';
 
 export type PlainUserModel = {
   id: UserId;

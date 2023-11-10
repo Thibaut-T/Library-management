@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import {
   BookPresenter,
-  PlainBookPresenter,
 } from 'library-api/src/controllers/books/book.presenter';
 import { BookId, UserId } from 'library-api/src/entities';
 import { bookToAdd } from 'library-api/src/models';

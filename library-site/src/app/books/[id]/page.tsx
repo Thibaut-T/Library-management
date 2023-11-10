@@ -4,7 +4,6 @@ import { useState, useEffect, FC} from "react";
 import { useParams } from 'next/navigation';
 import { useDeleteFavoriteGenreProvider, useUpdateUserProvider, useDeleteFriendProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders, useGetBookProviders } from "@/hooks";
 import { PlainUserModel, UserUpdateModel, GenreModel, PlainBookModel } from "@/models";
-import { useUserContext } from '@/contexts';
 import Link from 'next/link';
 
 interface DropdownProps {

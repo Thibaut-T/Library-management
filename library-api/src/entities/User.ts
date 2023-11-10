@@ -11,7 +11,6 @@ import{
 import { Book }  from './Book';
 import { Genre } from './Genre';
 import { Comment } from './Comment';
-import { PlainUserModel} from 'library-api/src/models';
 
 export type UserId = string & { __brand: 'User'};
 
