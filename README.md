@@ -3,7 +3,7 @@
 
 ## Description
 
-Introducing 'Library-management' – a feature-rich web application built with React, Node.js, and Nest.js. Library-management is your go-to platform for efficiently managing a library of books, authors, and users. With its sleek and user-friendly interface, you can easily add, edit, and categorize books, explore detailed author profiles, and empower your users with personalized book recommendations and borrowing capabilities. Whether you're a librarian or a book enthusiast, Library-management  offers a seamless and organized solution for all your library management needs.
+Introducing 'Library-management' – a feature-rich web application built with React, Node.js, and Nest.js. Library-management is your go-to platform for efficiently managing a library of books, authors, and users. With its sleek and user-friendly interface, you can easily add, edit, and categorize books, explore detailed author profiles, and empower your users with personalized book recommendations and borrowing capabilities. Whether you're a librarian or a book enthusiast, Library-management  offers a seamless and organized solution for all your library management needs
 
 ## Getting Started
 
