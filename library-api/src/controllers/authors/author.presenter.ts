@@ -8,6 +8,8 @@ export class PlainAuthorPresenter {
 
   lastName: string;
 
+  photoUrl: string;
+
   private constructor(data: PlainAuthorPresenter) {
     Object.assign(this, data);
   }
@@ -17,6 +19,7 @@ export class PlainAuthorPresenter {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
+      photoUrl: data.photoUrl,
     });
   }
 }

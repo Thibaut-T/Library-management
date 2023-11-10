@@ -11,6 +11,11 @@ export type AuthorModel = {
   id: AuthorId;
   firstName: string;
   lastName: string;
-  photoUrl?: string;
-  books: Book[];
+  photuUrl?: string;
+  books?: Book[];
+};
+
+export type authorToAdd = {
+  firstName: string;
+  lastName: string;
 };

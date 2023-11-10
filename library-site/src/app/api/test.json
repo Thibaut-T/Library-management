@@ -1,0 +1,429 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Book API",
+    "description": "A simple API for managing authors, books, genres, and comments"
+  },
+  "paths": {
+    "/authors": {
+      "post": {
+        "summary": "Add an author to the database",
+        "parameters": [
+          {
+            "name": "author",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuthorModel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Author added",
+            "schema": {
+              "$ref": "#/definitions/AuthorModel"
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all authors",
+        "responses": {
+          "200": {
+            "description": "A list of authors",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AuthorModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books": {
+      "get": {
+        "summary": "Get all books",
+        "responses": {
+          "200": {
+            "description": "A list of books",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Book"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new book",
+        "parameters": [
+          {
+            "name": "book",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created book",
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          }
+        }
+      }
+    },
+    "/bookGenres": {
+      "get": {
+        "summary": "Get all bookGenres",
+        "responses": {
+          "200": {
+            "description": "A list of bookGenres",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/BookGenre"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new bookGenre",
+        "parameters": [
+          {
+            "name": "book",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          },
+          {
+            "name": "genreId",
+            "in": "body",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The created bookGenre",
+            "schema": {
+              "$ref": "#/definitions/BookGenre"
+            }
+          }
+        }
+      }
+    },
+    "/genres": {
+      "get": {
+        "summary": "Get all genres",
+        "responses": {
+          "200": {
+            "description": "A list of genres",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/GenreRepositoryOutput"
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update genre users",
+        "parameters": [
+          {
+            "name": "genreId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated genre",
+            "schema": {
+              "$ref": "#/definitions/GenreRepositoryOutput"
+            }
+          }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "summary": "Get a book by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book if found",
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
+          },
+          "404": {
+            "description": "Book with this ID was not found"
+          }}}},
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "A list of users",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new user",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created user",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    }
+    
+  },
+  "definitions": {
+    "Author": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The author's ID"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The author's first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The author's last name"
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "The URL of the author's photo"
+        },
+        "books": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Book"
+          },
+          "description": "The books written by the author"
+        }
+      },
+      "required": ["id", "firstName", "lastName"]
+    },
+    "Book": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The book's ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "The book's name"
+        },
+        "writtenOn": {
+          "type": "string",
+          "format": "date",
+          "description": "The date the book was written on"
+        },
+        "author": {
+          "$ref": "#/definitions/Author",
+          "description": "The author of the book"
+        },
+        "bookGenres": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BookGenre"
+          },
+          "description": "The genres of the book"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          },
+          "description": "The comments on the book"
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": "The owners of the book"
+        },
+        "usersFavorite": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": "The users who have favorited the book"
+        }
+      },
+      "required": ["id", "name", "writtenOn", "author"]
+    },
+    "BookGenre": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The book genre's ID"
+        },
+        "book": {
+          "$ref": "#/definitions/Book",
+          "description": "The book of the genre"
+        },
+        "genre": {
+          "$ref": "#/definitions/Genre",
+          "description": "The genre of the book"
+        }
+      },
+      "required": ["id", "book", "genre"]
+    },
+    "Genre": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The genre's ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "The genre's name"
+        },
+        "bookGenres": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BookGenre"
+          },
+          "description": "The book genres of the genre"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": "The users who have favorited the genre"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "The comment's ID"
+        },
+        "commentText": {
+          "type": "string",
+          "description": "The comment's text"
+        },
+        "user": {
+          "$ref": "#/definitions/User",
+          "description": "The user who made the comment"
+        },
+        "book": {
+          "$ref": "#/definitions/Book",
+          "description": "The book the comment is on"
+        }
+      },
+      "required": ["id", "commentText", "user", "book"]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The user's ID"
+        },
+        "userName": {
+          "type": "string",
+          "description": "The user's first name"
+        },
+        "userLastName": {
+          "type": "string",
+          "description": "The user's last name"
+        },
+        "favoriteBook": {
+          "$ref": "#/definitions/Book",
+          "description": "The user's favorite book"
+        },
+        "ownedBooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Book"
+          },
+          "description": "The books owned by the user"
+        },
+        "friends": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": "The user's friends"
+        },
+        "favoriteGenres": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Genre"
+          },
+          "description": "The user's favorite genres"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          },
+          "description": "The comments made by the user"
+        }
+      },
+      "required": ["id", "userName", "userLastName"]
+    }
+  }
+}

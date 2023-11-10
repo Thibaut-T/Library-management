@@ -3,7 +3,7 @@ import {
   BookPresenter,
   PlainBookPresenter,
 } from './book.presenter';
-import { BookId } from '../../entities';
+import { BookId, UserId } from '../../entities';
 import { bookToAdd } from '../../models';
 import { BookUseCases } from '../../useCases';
 
@@ -11,31 +11,31 @@ import { BookUseCases } from '../../useCases';
 export class BookController {
   constructor(private readonly bookUseCases: BookUseCases) {}
 
-  @Get('/')
-  public async getAll(): Promise<PlainBookPresenter[]> {
-    const books = await this.bookUseCases.getAllPlain();
-    return books.map(PlainBookPresenter.from);
+  @Get('/:userId')
+  public async getAll(@Param('userId') userId: string): Promise<BookPresenter[]> {
+    const books = await this.bookUseCases.getAllPlain(userId);
+    const booksToSend = books.map(BookPresenter.from);
+    return booksToSend;
   }
 
-  @Get('/:id')
+  @Get('/user/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
+    //console.log("book id received: ", id);
     const book = await this.bookUseCases.getById(id);
-
     return BookPresenter.from(book);
   }
   
-  @Post('/')
-  public async addBook(@Body() newBook: bookToAdd): Promise<BookPresenter> {
+  @Post('/:userId')
+  public async addBook(@Body() newBook: bookToAdd, @Param('userId') userId: string): Promise<BookPresenter> {
     // Call your bookUseCases method to add the book to the database
-    const book = await this.bookUseCases.addBook(newBook);
+    const book = await this.bookUseCases.addBook(newBook, userId);
     return BookPresenter.from(book);
   }
 
-  @Delete('/:id')
-  public async deleteBook(@Param('id') id: BookId): Promise<BookPresenter> {
+  @Delete('/:userId/:id')
+  public async deleteBook(@Param('id') id: BookId, @Param('userId') userId: UserId): Promise<BookPresenter> {
     // Call your bookUseCases method to delete the book from the database
-    console.log("book to delete: ", id)
-    const book = await this.bookUseCases.deleteBook(id);
+    const book = await this.bookUseCases.deleteBook(id, userId);
     return BookPresenter.from(book);
   }
 }
