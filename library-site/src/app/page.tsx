@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useUserProviders } from '@/hooks';
 import Link from 'next/link';
 
+
 const Home: FC = (): ReactElement => {
   const [selectedOption, setSelectedOption] = useState('');
   const [showModal, setShowModal] = useState(false); // State to control the visibility of the modal
@@ -42,6 +43,7 @@ const Home: FC = (): ReactElement => {
   }, []);
 
   return (
+    
     <div className="h-screen bg-cover bg-center">
       <div className="flex flex-col items-center justify-center h-full text-white ">
         <div className="absolute top-0 left-0 m-4 flex flex-col w-60 mt-24">

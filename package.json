@@ -28,6 +28,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.6",
+    "swagger-ui-react": "^5.9.3",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
@@ -40,6 +41,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/supertest": "^2.0.12",
+    "@types/swagger-ui-react": "^4.18.3",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "autoprefixer": "^10.4.16",
