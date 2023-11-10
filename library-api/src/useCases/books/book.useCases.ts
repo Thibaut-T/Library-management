@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { BookId, UserId } from 'library-api/src/entities';
-import { bookToAdd} from 'library-api/src/models';
-import { BookRepository, AuthorRepository, BookGenreRepository } from 'library-api/src/repositories';
+import { BookId, UserId } from '../../entities';
+import { bookToAdd} from '../../models';
+import { BookRepository, AuthorRepository, BookGenreRepository } from '../../repositories';
 import {
   BookUseCasesOutput,
-} from 'library-api/src/useCases/books/book.useCases.type';
+} from '../../useCases/books/book.useCases.type';
 
 @Injectable()
 export class BookUseCases {

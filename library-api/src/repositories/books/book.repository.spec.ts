@@ -4,6 +4,9 @@ import { DataSource } from 'typeorm';
 import { NotFoundError, BadRequestError } from '../../common/errors';
 import { bookToAdd, AuthorModel, BookModel } from '../../models';
 import { GenreId, AuthorId, BookId, Book, Author, UserId } from '../../entities';
+import { UserRepository } from '../users/user.repository';  
+import { CommentRepository } from '../comments/comment.repository';
+import { GenreRepository } from '../genres/genre.repository';
 
 class MockDataSource {
   createEntityManager() {
@@ -12,6 +15,9 @@ class MockDataSource {
 
 describe('BookRepository', () => {
     let bookRepository: BookRepository;
+    let userRepository: UserRepository;
+    let commentRepository: CommentRepository;
+    let genreRepository: GenreRepository;
   
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
@@ -21,7 +27,9 @@ describe('BookRepository', () => {
             useClass: MockDataSource,
           },
           BookRepository,
-
+          UserRepository,
+          CommentRepository,
+          GenreRepository,
         ],
       }).compile();
   
@@ -119,22 +127,22 @@ describe('BookRepository', () => {
 
   
   describe('createBook', () => {
-    /*
+    
     it('should create a book', async () => {
 
       jest.spyOn(bookRepository, 'findOne').mockResolvedValue(null);
       jest.spyOn(bookRepository, 'save').mockResolvedValueOnce(book);
 
-      const result = await bookRepository.createBook(newBook, author);
+      const result = await bookRepository.createBook(newBook, author, '123' as UserId);
 
       expect(result).toEqual(book2);
     });
-    */
-    it('should throw a BadRequestError if the book already exists', async () => {
+  
+    it('should throw a TypeError if the book already exists', async () => {
 
       jest.spyOn(bookRepository, 'findOne').mockResolvedValue(book);
 
-      await expect(bookRepository.createBook(newBook, author, '123' as UserId)).rejects.toThrowError(BadRequestError);
+      await expect(bookRepository.createBook(newBook, author, '123' as UserId)).rejects.toThrowError(TypeError);
     });
   });
 

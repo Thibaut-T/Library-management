@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
-import { AuthorUseCases } from 'library-api/src/useCases/authors/author.useCases';
-import { PlainAuthorPresenter } from 'library-api/src/controllers/authors/author.presenter';
-import { authorToAdd } from 'library-api/src/models';
-import { AuthorId } from 'library-api/src/entities';
+import { AuthorUseCases } from '../../useCases/authors/author.useCases';
+import { PlainAuthorPresenter } from '../../controllers/authors/author.presenter';
+import { authorToAdd } from '../../models';
+import { AuthorId } from '../../entities';
 
 @Controller('authors')
 export class AuthorController {

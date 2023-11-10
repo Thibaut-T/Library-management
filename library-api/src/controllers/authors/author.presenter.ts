@@ -1,6 +1,5 @@
-import { AuthorId, Book} from 'library-api/src/entities';
-import { BookModel, PlainAuthorModel } from 'library-api/src/models';
-import { adaptBookEntityToBookModel } from 'library-api/src/repositories/books/book.utils';
+import { AuthorId, Book} from '../../entities';
+import { BookModel, PlainAuthorModel } from '../../models';
 
 export class PlainAuthorPresenter {
   id: AuthorId;
