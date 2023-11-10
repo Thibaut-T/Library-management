@@ -4,7 +4,7 @@ export type PlainAuthorModel = {
   id: AuthorId;
   firstName: string;
   lastName: string;
-  photuUrl?: string;
+  photoUrl?: string;
 };
 
 export type AuthorModel = {
@@ -13,4 +13,9 @@ export type AuthorModel = {
   lastName: string;
   photuUrl?: string;
   books?: Book[];
+};
+
+export type authorToAdd = {
+  firstName: string;
+  lastName: string;
 };

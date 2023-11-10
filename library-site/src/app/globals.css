@@ -2,15 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 body {
-  background-color: lightblue;
+  overflow: hidden;
+  background-color: rgb(122, 165, 245);
+  
 }
-
-
-
-
 
 .bg-grey {
   display: flex;

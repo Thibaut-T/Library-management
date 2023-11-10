@@ -105,7 +105,9 @@ const BooksPage: FC = (): ReactElement => {
   
   return (
     <>
-      <div className="inline-flex">
+    
+    <h1 className='text-center text-4xl font-bold my-4 underline'>Welcome to the books page</h1>
+    <div className="inline-flex justify-center mx-auto w-full  text-gray-800 font-bold py-2 px-4">
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={handleSortByName}>Sort by Name (A-Z)</button>
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={handleSortByNameInv}>Sort by Name (Z-A)</button>
         <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={handleSortByAuthor}>Sort by Author (A-Z)</button>
@@ -126,7 +128,7 @@ const BooksPage: FC = (): ReactElement => {
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
             <input
-              className="bg-gray-200 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 form-input py-2 px-4 block w-full leading-5 rounded-md transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-8"
               placeholder="Enter book name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -253,15 +255,19 @@ const BooksPage: FC = (): ReactElement => {
         </div>
       </div>
   }
-      <div className='flex flex-wrap'>
-      {sortedBooks.map((book) => (
-        <div className="max-w-sm rounded overflow-hidden shadow-lg" key={book.id} onClick={() => console.log(book.id)}>
-        <div className="px-6 py-4">
-          <div className="font-bold text-xl mb-2">{book.name}</div>
-          <button className="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded" onClick={() => deleteToggle(book.id, book.name)}>
-            Delete
-          </button>
-          {deleteModal &&
+    <div className="flex flex-wrap justify-start">
+  {sortedBooks.map((book) => (
+    <div className="max-w-sm flex flex-col rounded overflow-hidden shadow-lg bg-blue-100 m-4 rounded-lg" key={book.id} onClick={() => console.log(book.id)}>
+      <div className="px-6 py-4">
+        <div className="font-bold text-xl mb-2">{book.name}</div>
+        <p className="text-gray-700 text-base">Super livre franchement lisez le.</p>
+      </div>
+      <div className="px-6 pt-4 pb-2">
+        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.author.firstName} {book.author.lastName}</span>
+        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.genres}</span>
+        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{new Date(book.writtenOn).toLocaleDateString('fr-FR')}</span>
+      </div>
+      {deleteModal &&
           <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
         
@@ -292,18 +298,17 @@ const BooksPage: FC = (): ReactElement => {
           </div>
         </div>
           }
-          <p className="text-gray-700 text-base">
-            Super livre franchement lisez le.
-          </p>
-        </div>
-        <div className="px-6 pt-4 pb-2">
-          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.author.firstName} {book.author.lastName} </span>
-          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{book.genres}</span>
-          <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{new Date(book.writtenOn).toLocaleDateString('fr-FR')}</span>
-        </div>
-        </div>
-      ))}
+         <div className="flex-grow"></div> {/* This ensures equal spacing */}
+      <div className="flex justify-center">
+        <button className="bg-red-500 mb-2 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => deleteToggle(book.id, book.name)}>
+          Delete
+        </button>
       </div>
+    </div>
+      ))}
+      
+      </div>
+      
     </>
   );
 };
