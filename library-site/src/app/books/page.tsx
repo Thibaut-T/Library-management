@@ -7,7 +7,6 @@ import { useUserContext } from '@/contexts';
 import Link from 'next/link';
 
 
-
 const BooksPage: FC = (): ReactElement => {
   const { userId } = useUserContext();
   console.log("User id: ", userId);
@@ -89,8 +88,21 @@ const BooksPage: FC = (): ReactElement => {
   useEffect(() => {
     handleSortByName();
   }, [books, searchQuery]);
+
+
+  const useSortByDate = (books: PlainBookModel[]): PlainBookModel[] => {
+    return books.filter((book) =>
+      book.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).sort((a, b) => new Date(a.writtenOn).getTime() - new Date(b.writtenOn).getTime());
+  };
+
+  // Use this sorting function for dates in reverse order
+  const useSortByDateInv = (books: PlainBookModel[]): PlainBookModel[] => {
+    return books.filter((book) =>
+      book.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).sort((a, b) => new Date(b.writtenOn).getTime() - new Date(a.writtenOn).getTime());
+  };
   
-  console.log("Books: ", books)
   return (
     <>
     

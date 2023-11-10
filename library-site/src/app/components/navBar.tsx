@@ -28,7 +28,11 @@ const Navbar = () => {
             Users
           </p>
         </Link>
-       
+        <Link href="/api">
+          <p className="cursor-pointer text-3xl text-white transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
+            API 
+          </p>
+        </Link>
       </div>
     </nav>
   );

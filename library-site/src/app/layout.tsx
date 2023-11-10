@@ -10,6 +10,7 @@ import ProfilePage from './users/page';
 import { UserProvider } from '@/contexts';
 const inter = Inter({ subsets: ['latin'] });
 
+
 export const metadata: Metadata = {
   title: 'Library',
   description: 'Book management system',
@@ -25,7 +26,6 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <Navbar />
-          
           {children}
           </body>
       </html>

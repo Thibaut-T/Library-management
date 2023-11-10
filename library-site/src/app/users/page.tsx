@@ -29,11 +29,20 @@ const ProfilePage: FC = () => {
     {/* need to get into the BDD and get all the id that correspond */}
   }
 
-  useEffect((() => {
+  
+
+
+  const filteredUsers = users.filter(user => {
+    const book = books.find(book => book.id === user.favoriteBook);
+    return user.userName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (!user.favoriteBook || (book && book.name.toLowerCase().includes(bookSearchTerm.toLowerCase())));
+  });
+  
+  useEffect(() => {
     loadUsers();
     loadBooks("none");
     loadGenres();
-  }), [users, books, genres]);
+  }, []);
   console.log(users);
   return (
     <div>
@@ -55,7 +64,7 @@ const ProfilePage: FC = () => {
         />
       </div>
       <div className="flex justify-start">
-        {users.map((user) => ( 
+        {filteredUsers.map((user) => ( 
           <div className="max-w-sm rounded overflow-hidden shadow-lg bg-blue-100 m-4 rounded-lg" key={user.userName}>
             <div className="px-6 py-4">
               <div className="font-bold text-xl mb-2">{user.userName} {user.userLastName}</div>

@@ -165,7 +165,7 @@ const profilPageID: FC = () => {
     return <div>Error: {error}</div>
   }
   return (
-    <div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
+    <><h1 className='text-center text-4xl font-bold my-4 underline'>Welcome to the profil page</h1><div className="p-4 w-full max-w-3xl mx-auto space-y-4 bg-white shadow rounded-lg mt-8">
       {userToShow && (
         <>
           <div className="flex justify-center">
@@ -186,12 +186,12 @@ const profilPageID: FC = () => {
             <button
               type="button"
               onClick={() => handleOpenModal("favoriteBook", "Change")}
-              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded mx-auto block"
             >
               Change favorite book
             </button>
           </div>
-          
+
           {/* Display ownedBooks */}
           <div className="px-8 py-4">
             <span className="text-gray-700 block text-center">Owned Books:</span>
@@ -219,7 +219,7 @@ const profilPageID: FC = () => {
               Add a book
             </button>
           </div>
-          
+
           {/* Display friends */}
           <div className="px-8 py-4">
             <span className="text-gray-700 block text-center">Friend list:</span>
@@ -231,8 +231,8 @@ const profilPageID: FC = () => {
                 </div>
               </div>
             ))}
-          {/* Modal buttons for friends */}
-          <button
+            {/* Modal buttons for friends */}
+            <button
               type="button"
               onClick={() => handleOpenModal("friends", "Delete")}
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
@@ -259,8 +259,8 @@ const profilPageID: FC = () => {
                 </div>
               </div>
             ))}
-          {/* Modal buttons for favoriteGenres */}
-          <button
+            {/* Modal buttons for favoriteGenres */}
+            <button
               type="button"
               onClick={() => handleOpenModal("favoriteGenres", "Delete")}
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
@@ -292,25 +292,23 @@ const profilPageID: FC = () => {
           title={`Select a ${modalInfo.category}`}
           action={modalInfo.action}
           category={modalInfo.category}
-          items={
-            modalInfo.category === "favoriteBook"
-              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)): [])
-              : modalInfo.category === "ownedBooks" && modalInfo.action === "Delete"
-              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)): [])
-              : modalInfo.category === "ownedBooks" && modalInfo.action === "Add" 
-              ? books.map((book) => book.name)
-              : modalInfo.category === "friends" && modalInfo.action === "Delete"
-              ? userToShow.friends
-              : modalInfo.category === "friends" && modalInfo.action === "Add"
-              ? users
-                  .filter(user => userToShow.friends ? user.id !== userId && !userToShow.friends.includes(`${user.userName} ${user.userLastName}`):null)
-                  .map(user => `${user.userName} ${user.userLastName}`)
-              : modalInfo.category === "favoriteGenres" && modalInfo.action === "Delete"
-              ? (userToShow.favoriteGenres ? userToShow.favoriteGenres.map((genre) => findName(genre, genres)): [])
-              : modalInfo.category === "favoriteGenres" && modalInfo.action === "Add"
-              ? genres.map((genre) => genre.name)
-              : []
-          }
+          items={modalInfo.category === "favoriteBook"
+            ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)) : [])
+            : modalInfo.category === "ownedBooks" && modalInfo.action === "Delete"
+              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)) : [])
+              : modalInfo.category === "ownedBooks" && modalInfo.action === "Add"
+                ? books.map((book) => book.name)
+                : modalInfo.category === "friends" && modalInfo.action === "Delete"
+                  ? userToShow.friends
+                  : modalInfo.category === "friends" && modalInfo.action === "Add"
+                    ? users
+                      .filter(user => userToShow.friends ? user.id !== userId && !userToShow.friends.includes(`${user.userName} ${user.userLastName}`) : null)
+                      .map(user => `${user.userName} ${user.userLastName}`)
+                    : modalInfo.category === "favoriteGenres" && modalInfo.action === "Delete"
+                      ? (userToShow.favoriteGenres ? userToShow.favoriteGenres.map((genre) => findName(genre, genres)) : [])
+                      : modalInfo.category === "favoriteGenres" && modalInfo.action === "Add"
+                        ? genres.map((genre) => genre.name)
+                        : []}
           onSubmit={(selectedValue, category, action) => {
             console.log("Selected value: ", selectedValue);
             // Handle form submission based on the category (ownedBooks, favoriteBook, etc.)
@@ -324,14 +322,13 @@ const profilPageID: FC = () => {
             } else if (category === 'friends') {
               // Logic for handling other categories
               const friendId = users.find((user) => `${user.userName} ${user.userLastName}` === selectedValue)?.id;
-              friendId ? handleUpdate(category, action, friendId): null;
+              friendId ? handleUpdate(category, action, friendId) : null;
             } else if (category === 'favoriteGenres') {
               // Logic for handling other categories
               const genreId = findId(selectedValue, genres);
               handleUpdate(category, action, genreId);
             }
-          }}
-        />
+          } } />
       )}
 
 
@@ -344,13 +341,13 @@ const profilPageID: FC = () => {
             if (confirmDelete) {
               handleDeleteUser();
             }
-          }}
+          } }
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
         >
           Delete User
         </button>
       </div>
-    </div>
+    </div></>
   );
 };
 
