@@ -43,7 +43,6 @@ export class BookUseCases {
    * @throws 400: book's data is invalid
    */
   public async addBook(newBook: bookToAdd, userId: string): Promise<BookUseCasesOutput> {
-    console.log("book received: ", newBook, "from user: ", userId);
     if (!newBook.name) {
       throw new Error('Book name is required');
     }

@@ -9,7 +9,6 @@ const SignInForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here  send data to the server
-    console.log('Email:', email, 'Password:', password);
   };
 
   return (

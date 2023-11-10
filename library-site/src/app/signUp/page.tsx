@@ -20,7 +20,6 @@ const RegisterForm = () => {
 
   const handleSubmit = (e: React.ChangeEvent<any>) => {
     e.preventDefault();
-    console.log(formData);
     const user:{userName: string, userLastName: string, id: string} = {
       userName:formData.firstName, 
       userLastName:formData.lastName,

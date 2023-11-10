@@ -117,8 +117,6 @@ export class UserRepository extends Repository<User> {
         if(!userToUpdate) {
             throw new Error("User not found");
         }
-        //console.log("userToUpdate: ", userToUpdate.favoriteBook)
-        //console.log("user: ", user.newFavoriteBook)
         userToUpdate.userName = user.userName;
         userToUpdate.userLastName = user.userLastName;
         if(user.newFavoriteBook === "") {
@@ -131,7 +129,6 @@ export class UserRepository extends Repository<User> {
             }
             if(newFavoriteBook != userToUpdate.favoriteBook) {
                 userToUpdate.favoriteBook = newFavoriteBook;
-                console.log("new favorite book: ", newFavoriteBook)
             }
         }
         if(user.newFavoriteGenre){
@@ -160,7 +157,6 @@ export class UserRepository extends Repository<User> {
         const updatedUser = await this.findOne({ where: { id },
             relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
         });
-        //console.log("updatedUser: ", updatedUser.favoriteBook)
         return adaptUserEntityToPlainUserModel(updatedUser);
     };
 
@@ -187,8 +183,6 @@ export class UserRepository extends Repository<User> {
         await friendToAdd.friends.push(user);
         await this.save(user);
         await this.save(friendToAdd);
-        console.log("user after adding friend: ", user.friends)
-        console.log("friend after adding friend: ", friendToAdd.friends)
         return adaptUserEntityToPlainUserModel(user);
     };
 
@@ -224,12 +218,9 @@ export class UserRepository extends Repository<User> {
      */
 
     public async deleteFavoriteGenre(id: UserId, genreId: GenreId): Promise<PlainUserModel> {
-        console.log("genreId: ", genreId)
-        console.log("id: ", id)
         const user = await this.findOne({ where: { id: id},
             relations: { favoriteBook: true, ownedBooks: true, friends: true, favoriteGenres: true},
         });
-        console.log("user: ", user)
         if(!user) {
             throw new Error("User not found");
         }

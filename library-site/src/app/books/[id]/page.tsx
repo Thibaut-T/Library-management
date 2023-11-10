@@ -25,12 +25,9 @@ const Dropdown: FC<DropdownProps> = ({ options, onChange }) => {
 };
 const BooksDetailsPage: FC = () => {
   const { id } = useParams();
-  console.log("Both ids: ", id)
   if(!id) return <div>Book not found</div>
   const bookId  = (id as string).split('%20')[1];
   const userId = (id as string).split('%20')[0];
-  console.log("Book id: ", bookId);
-  console.log("User id: ", userId);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState('');
 
@@ -78,18 +75,15 @@ const BooksDetailsPage: FC = () => {
   const [owners, setOwners] = useState<string[]>([]);
 
   const handleDeleteBook = async () => {
-    //console.log("delete user");
     const response = await deleteBook(bookId, userId);
     if (response) {
-      console.log("Book deleted successfully");
+      alert("Book deleted successfully");
     } else {
-      console.log("Failed to delete book");
+      alert("Failed to delete book");
     }
   };
   const handleRedirectUser = (user: string) => {
-    //console.log("Redirect to user: ", user);
     const userToRedirect = users?.find((u) => `${u.userName} ${u.userLastName}` === user);
-    //console.log("User to redirect: ", userToRedirect);
     if (userToRedirect) {
       window.location.href = `/users/${userToRedirect.id}`;
     }
@@ -110,7 +104,6 @@ const BooksDetailsPage: FC = () => {
 
   //create a array owners where all the owners of the book are stored
   function getBookOwners(bookToShow: PlainBookModel, users: PlainUserModel[]) {
-    console.log("Inside");
     const ownersToSet = [''];
     if (bookToShow) {
       users.forEach((user) => {
@@ -124,7 +117,6 @@ const BooksDetailsPage: FC = () => {
   function updateOwners(bookToShow: PlainBookModel, users: PlainUserModel[]) {
     const ownersToSet = getBookOwners(bookToShow, users);
     ownersToSet.shift();
-    console.log("Owners to set: ", ownersToSet);
     setOwners(ownersToSet);
   }
   useEffect(() => {
@@ -139,7 +131,6 @@ const BooksDetailsPage: FC = () => {
       updateOwners(bookToShow, users);
     }
   }, [bookToShow, users]);
-  console.log("Book to show: ", bookToShow);
   if(error){
     return <div>Error: {error}</div>
   }

@@ -85,13 +85,11 @@ const AuthorsDetailsPage: FC = () => {
 
   const handleDeleteBook = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Delete book: ", selectedBookToDelete);
     const response = await deleteBook(selectedBookToDelete, "none");
     toggleDeleteBook();
   }
   const handleModifyAuthor = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Modify author: ", authorId, firstName, lastName);
     const authorToUpdate: authorToAdd = {
       firstName: firstName,
       lastName: lastName,
@@ -102,7 +100,6 @@ const AuthorsDetailsPage: FC = () => {
   };
 
   const handleDeleteAuthor = async () => {
-    //console.log("delete user");
     const response = await deleteAuthor(authorId);
   };
   const handleRedirectBook = (book: PlainBookModel) => {
@@ -113,7 +110,6 @@ const AuthorsDetailsPage: FC = () => {
   
   //create a array owners where all the owners of the book are stored
   function getBookOwners(authorToShow: PlainBookModel, users: PlainUserModel[]) {
-    console.log("Inside");
     const ownersToSet = [''];
     if (authorToShow) {
       users.forEach((user) => {

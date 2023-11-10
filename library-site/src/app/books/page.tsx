@@ -9,7 +9,6 @@ import Link from 'next/link';
 
 const BooksPage: FC = (): ReactElement => {
   const { userId } = useUserContext();
-  console.log("User id: ", userId);
   const { useListBooks } = useBooksProviders();
   const { books, load: loadBooks } = useListBooks();
  

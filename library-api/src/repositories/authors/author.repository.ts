@@ -26,7 +26,6 @@ export class AuthorRepository extends Repository<Author> {
       const authorAdded = await this.findOne({ where: { firstName: author.firstName, lastName: author.lastName } });
       return authorAdded;
     }
-    console.log("author: ", author);
     return authorExists;
   };
 

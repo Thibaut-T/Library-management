@@ -43,7 +43,6 @@ const ProfilePage: FC = () => {
     loadBooks("none");
     loadGenres();
   }, []);
-  console.log(users);
   return (
     <div>
       <h1 className='text-center text-4xl font-bold my-4 underline'>Welcome to the users page</h1>

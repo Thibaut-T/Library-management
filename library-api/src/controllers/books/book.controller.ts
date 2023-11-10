@@ -20,7 +20,6 @@ export class BookController {
 
   @Get('/user/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
-    //console.log("book id received: ", id);
     const book = await this.bookUseCases.getById(id);
     return BookPresenter.from(book);
   }

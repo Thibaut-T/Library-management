@@ -72,7 +72,7 @@ const profilPageID: FC = () => {
 
   const handleUpdate = async (cat: string, action: string, value: string) => {
     // Update userToShow with the new value
-    console.log(" Category: ", cat, " Value: ", value, " Action: ", action);
+    
     // Call updateUser function with the updated data
     const update : UserUpdateModel = {
       id: userToShow.id,
@@ -87,12 +87,10 @@ const profilPageID: FC = () => {
       : cat == "favoriteGenres" ?
       update.newFavoriteGenre = value
       : null;
-      console.log("User: ", userToShow, " update: ", update);
       await updateUser(update);
       setShouldLoadUserData(true)
     }
     else if(action === "Add" && cat === "friends"){
-      console.log("Add friend: ", value, " with id: ", userId, " and name: ", userToShow.userName, " ", userToShow.userLastName);
       await addFriend(userId, value)
       setShouldLoadUserData(true)
     }
@@ -111,14 +109,11 @@ const profilPageID: FC = () => {
   };
 
   const handleDeleteUser = async () => {
-    console.log("delete user");
     const response = await deleteUser(userId);
     if (response) {
-      console.log("User deleted successfully");
       // Redirect to the users page
       window.location.href = '/users';
     } else {
-      console.log("Failed to delete user");
       // Handle error, show error message, etc.
     }
   };
@@ -337,7 +332,7 @@ const profilPageID: FC = () => {
                         ? genres.map((genre) => genre.name)
                         : []}
           onSubmit={(selectedValue, category, action) => {
-            console.log("Selected value: ", selectedValue);
+            
             // Handle form submission based on the category (ownedBooks, favoriteBook, etc.)
             if (category === 'ownedBooks') {
               // Logic for handling ownedBooks category
