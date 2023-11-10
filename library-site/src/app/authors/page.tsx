@@ -8,6 +8,7 @@ import {
   useAuthorsProviders,
   useAddAuthorsProviders
 } from "@/hooks";
+import Link from "next/link";
 import { useSortByNameInv } from "@/utils/sortingFunctions";
 import { PlainBookModel, authorToAdd } from "@/models";
 import { useUserContext } from "@/contexts";
@@ -65,6 +66,7 @@ const AuthorsPage: FC = (): ReactElement => {
       return booksCountB - booksCountA;
     }
   });
+
   const handleAddAuthor = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     newAuthor.firstName = firstName;
@@ -206,7 +208,15 @@ const AuthorsPage: FC = (): ReactElement => {
                 {countBooks(author.id)} books written
               </span>
             </div>
+            <div className="px-6 pt-4 pb-2 flex justify-center">
+              <Link href={`/authors/${author.id}`}>
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  Author details
+                </button>
+              </Link>
+            </div>
           </div>
+          
         ))}
       </div>
     </>

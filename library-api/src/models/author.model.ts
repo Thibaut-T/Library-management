@@ -11,7 +11,7 @@ export type AuthorModel = {
   id: AuthorId;
   firstName: string;
   lastName: string;
-  photuUrl?: string;
+  photoUrl?: string;
   books?: Book[];
 };
 

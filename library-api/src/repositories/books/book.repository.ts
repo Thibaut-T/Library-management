@@ -124,7 +124,10 @@ export class BookRepository extends Repository<Book> {
    */
   public async deleteBook(id: BookId, userId: UserId): Promise<BookRepositoryOutput> {
     const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true, owners: true }});
-
+    if(userId == "none") {
+      await this.delete(id);
+      return adaptBookEntityToBookModel(book);
+    }
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
