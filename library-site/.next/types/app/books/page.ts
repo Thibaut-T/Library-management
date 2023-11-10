@@ -1,4 +1,4 @@
-// File: C:\Users\Thiba\Desktop\Library-management\library-site\src\app\books\page.tsx
+// File: C:\Users\paulm\Documents\GitHub\Library-management\library-site\src\app\books\page.tsx
 import * as entry from '../../../../src/app/books/page.js'
 import type { ResolvingMetadata } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

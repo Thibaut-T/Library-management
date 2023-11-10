@@ -31,6 +31,8 @@ const profilPageID: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState('');
 
+  const [shouldLoadUserData, setShouldLoadUserData] = useState(false);
+
   const { useGetUser } = useGetUserProvider();
   const { user: userToShow, load: loadUsers } = useGetUser();
 
@@ -87,10 +89,12 @@ const profilPageID: FC = () => {
       : null;
       console.log("User: ", userToShow, " update: ", update);
       await updateUser(update);
+      setShouldLoadUserData(true)
     }
     else if(action === "Add" && cat === "friends"){
       console.log("Add friend: ", value, " with id: ", userId, " and name: ", userToShow.userName, " ", userToShow.userLastName);
       await addFriend(userId, value)
+      setShouldLoadUserData(true)
     }
     else if(action === "Delete"){
       cat === "ownedBooks" ? 
@@ -100,7 +104,9 @@ const profilPageID: FC = () => {
       : cat === "favoriteGenres" ?
       await deleteFavoriteGenre(userId, value)
       : null;
+      setShouldLoadUserData(true)
     }
+    setShouldLoadUserData(true)
     // Handle the response if needed
   };
 
@@ -133,10 +139,28 @@ const profilPageID: FC = () => {
 
   useEffect(() => {
     loadUsers(userId);
-    loadBooks("none");
-    loadGenres();
-    loadUsersList();
-  }, [userToShow, books, genres, users]);
+  }, [userId]);
+
+  useEffect(() => {
+      loadBooks("none");
+  }, [books]);
+
+  useEffect(() => {
+      loadGenres();
+  }, [genres]);
+
+  useEffect(() => {
+      loadUsersList();
+  }, [userToShow]);
+
+  useEffect(() => {
+    if (shouldLoadUserData) {
+        loadUsers(userId);
+        loadBooks("none");
+        loadGenres();
+        loadUsersList();
+    }
+}, [userId, shouldLoadUserData, userToShow, books, genres, users]);
   if(error){
     return <div>Error: {error}</div>
   }

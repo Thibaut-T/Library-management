@@ -12,6 +12,7 @@ export const useListUsers = (): UseListUsersProvider => {
     const [users, setUsers] = useState<PlainUserModel[]>([]);
 
     const fetchUsers = (): void => {
+        //console.log("fetching users: ", process.env.NEXT_PUBLIC_API_URL);
         axios
             .get(`${process.env.NEXT_PUBLIC_API_URL}/users`)
             .then((data) => setUsers(data.data))

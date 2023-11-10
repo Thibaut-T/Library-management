@@ -22,7 +22,7 @@ export class BookUseCases {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(userId: string): Promise<PlainBookUseCasesOutput[]> {
+  public async getAllPlain(userId: string): Promise<BookUseCasesOutput[]> {
     return this.bookRepository.getAllPlain(userId);
   }
 

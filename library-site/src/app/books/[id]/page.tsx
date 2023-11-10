@@ -1,12 +1,10 @@
 'use client';
 import React from "react";
 import { useState, useEffect, FC} from "react";
-
 import { useParams } from 'next/navigation';
-import Modal from "@/app/components/modal";
-import { findName, findId } from "@/utils/findingFunctions";
 import { useDeleteFavoriteGenreProvider, useUpdateUserProvider, useDeleteFriendProvider, useAddFriendProvider, useGetUserProvider, useUserProviders, useGenresProviders, useBooksProviders, useDeleteUserProvider, useAddBookProviders, useDeleteBookProviders, useGetBookProviders } from "@/hooks";
-import { PlainUserModel, UserUpdateModel } from "@/models";
+import { PlainUserModel, UserUpdateModel, GenreModel, PlainBookModel } from "@/models";
+import { useUserContext } from '@/contexts';
 
 interface DropdownProps {
   options: string[];
@@ -26,7 +24,12 @@ const Dropdown: FC<DropdownProps> = ({ options, onChange }) => {
 };
 const BooksDetailsPage: FC = () => {
   const { id } = useParams();
-  const bookId = id as string;
+  console.log("Both ids: ", id)
+  if(!id) return <div>Book not found</div>
+  const bookId  = (id as string).split('%20')[1];
+  const userId = (id as string).split('%20')[0];
+  console.log("Book id: ", bookId);
+  console.log("User id: ", userId);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState('');
 
@@ -71,55 +74,25 @@ const BooksDetailsPage: FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedModalValue, setSelectedModalValue] = useState<string>('');
 
-  const handleUpdate = async (cat: string, action: string, value: string) => {
-   /* // Update userToShow with the new value
-    console.log(" Category: ", cat, " Value: ", value, " Action: ", action);
-    // Call updateUser function with the updated data
-    const update : UserUpdateModel = {
-      id: userToShow.id,
-      userName: userToShow.userName,
-      userLastName: userToShow.userLastName,
-    };
-    if((action === "Add" || action == "Change") && cat != "friends"){
-      cat === "favoriteBook" ?
-      update.newFavoriteBook = findId(value, books)
-      : cat === "ownedBooks" ?
-      update.newOwnedBook = value
-      : cat == "favoriteGenres" ?
-      update.newFavoriteGenre = value
-      : null;
-      console.log("User: ", userToShow, " update: ", update);
-      await updateUser(update);
-    }
-    else if(action === "Add" && cat === "friends"){
-      console.log("Add friend: ", value, " with id: ", userId, " and name: ", userToShow.userName, " ", userToShow.userLastName);
-      await addFriend(userId, value)
-    }
-    else if(action === "Delete"){
-      cat === "ownedBooks" ? 
-      await deleteBook(value, userId)
-      : cat === "friends" ?
-      await deleteFriend(userId, value)
-      : cat === "favoriteGenres" ?
-      await deleteFavoriteGenre(userId, value)
-      : null;
-    }
-    // Handle the response if needed*/
-  };
+  const [owners, setOwners] = useState<string[]>([]);
 
-  const handleDeleteUser = async () => {
-    /*console.log("delete user");
-    const response = await deleteUser(userId);
+  const handleDeleteBook = async () => {
+    //console.log("delete user");
+    const response = await deleteBook(bookId, userId);
     if (response) {
-      console.log("User deleted successfully");
-      // Redirect to the users page
-      window.location.href = '/users';
+      console.log("Book deleted successfully");
     } else {
-      console.log("Failed to delete user");
-      // Handle error, show error message, etc.
-    }*/
+      console.log("Failed to delete book");
+    }
   };
-
+  const handleRedirectUser = (user: string) => {
+    //console.log("Redirect to user: ", user);
+    const userToRedirect = users?.find((u) => `${u.userName} ${u.userLastName}` === user);
+    //console.log("User to redirect: ", userToRedirect);
+    if (userToRedirect) {
+      window.location.href = `/users/${userToRedirect.id}`;
+    }
+  };
   const [modalInfo, setModalInfo] = useState<{
     category: string;
     action: string;
@@ -134,12 +107,38 @@ const BooksDetailsPage: FC = () => {
     setModalInfo(null);
   };
 
+  //create a array owners where all the owners of the book are stored
+  function getBookOwners(bookToShow: PlainBookModel, users: PlainUserModel[]) {
+    console.log("Inside");
+    const ownersToSet = [''];
+    if (bookToShow) {
+      users.forEach((user) => {
+        if (user.ownedBooks && user.ownedBooks.includes(bookToShow.id)) {
+          ownersToSet.push(`${user.userName} ${user.userLastName}`);
+        }
+      });
+    }
+    return ownersToSet;
+  }
+  function updateOwners(bookToShow: PlainBookModel, users: PlainUserModel[]) {
+    const ownersToSet = getBookOwners(bookToShow, users);
+    ownersToSet.shift();
+    console.log("Owners to set: ", ownersToSet);
+    setOwners(ownersToSet);
+  }
   useEffect(() => {
     loadBook(bookId);
     loadBooks("none");
     loadGenres();
     loadUsersList();
+    
   }, []);
+  useEffect(() => {
+    if (bookToShow && users) {
+      updateOwners(bookToShow, users);
+    }
+  }, [bookToShow, users]);
+  console.log("Book to show: ", bookToShow);
   if(error){
     return <div>Error: {error}</div>
   }
@@ -148,185 +147,53 @@ const BooksDetailsPage: FC = () => {
       {bookToShow && (
         <>
           <div className="flex justify-center">
-            <h1 className="text-2xl font-bold">{bookToShow.name}</h1>
+            <h1 className="text-2xl font-bold">Title: {bookToShow.name}</h1>
           </div>
-          {/* Display favoriteBook */}
+          {/* Display Author */}
           <div className="px-8 py-4">
-            <span className="text-gray-700 block text-center">Favorite Book:</span>
-            {/* Display favoriteBook items */}
-            {userToShow.favoriteBook && (
-              <div className="flex justify-center p-4">
-                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
-                  {findName(userToShow.favoriteBook, books)}
-                </div>
-              </div>
-            )}
-            {/* Modal buttons */}
-            <button
-              type="button"
-              onClick={() => handleOpenModal("favoriteBook", "Change")}
-              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
-            >
-              Change favorite book
-            </button>
+            <span className="text-gray-700 block">Author:</span>
+            <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
+              {bookToShow.author.firstName} {bookToShow.author.lastName}
+            </div>
           </div>
           
-          {/* Display ownedBooks */}
+          {/* Display Genre */}
           <div className="px-8 py-4">
-            <span className="text-gray-700 block text-center">Owned Books:</span>
-            {/* Display ownedBooks items */}
-            {userToShow.ownedBooks && userToShow.ownedBooks.map((book) => (
-              <div className="flex justify-center p-1" key={book}>
-                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
-                  {findName(book, books)}
-                </div>
-              </div>
-            ))}
-            {/* Modal buttons for ownedBooks */}
-            <button
-              type="button"
-              onClick={() => handleOpenModal("ownedBooks", "Delete")}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Delete a book
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOpenModal("ownedBooks", "Add")}
-              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
-            >
-              Add a book
-            </button>
+            <span className="text-gray-700 block">Owned Books:</span>
+            <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
+              {bookToShow.genres[0]? bookToShow.genres[0].name: 'No genres'}
+            </div>
           </div>
           
-          {/* Display friends */}
+          {/* Display owners */}
           <div className="px-8 py-4">
-            <span className="text-gray-700 block text-center">Friend list:</span>
+            <span className="text-gray-700 block">User who owns this book:</span>
             {/* Display friends items */}
-            {userToShow.friends && userToShow.friends.map((friend) => (
-              <div className="flex justify-center p-1" key={friend}>
+            {owners.length > 0 && owners.map((owner) => (
+              <div className="flex" key={owner}>
                 <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
-                  {friend}
+                  <button onClick={() => handleRedirectUser(owner)}>
+                    {owner}
+                  </button>
                 </div>
               </div>
             ))}
-          {/* Modal buttons for friends */}
-          <button
-              type="button"
-              onClick={() => handleOpenModal("friends", "Delete")}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Delete a friend
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOpenModal("friends", "Add")}
-              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
-            >
-              Add a friend
-            </button>
-          </div>
-
-          {/* Display favoriteGenres */}
-          <div className="px-8 py-4">
-            <span className="text-gray-700 block text-center">Favorite genres:</span>
-            {/* Display friends items */}
-            {userToShow.favoriteGenres && userToShow.favoriteGenres.map((genre) => (
-              <div className="flex justify-center p-1" key={genre}>
-                <div className="relative inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded m-1">
-                  {findName(genre, genres)}
-                </div>
-              </div>
-            ))}
-          {/* Modal buttons for favoriteGenres */}
-          <button
-              type="button"
-              onClick={() => handleOpenModal("favoriteGenres", "Delete")}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Delete a favorite genre
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOpenModal("favoriteGenres", "Add")}
-              className="mt-4 px-4 py-2 bg-blue-500 float-right text-white rounded"
-            >
-              Add a favorite genre
-            </button>
           </div>
         </>
       )}
-
-      {/* Modal component */}
-      {showModal && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          {/* Modal content */}
-        </div>
-      )}
-      {/* Modal overlay */}
-      {modalInfo && (
-        <Modal
-          show={true}
-          onClose={handleCloseModal}
-          title={`Select a ${modalInfo.category}`}
-          action={modalInfo.action}
-          category={modalInfo.category}
-          items={
-            modalInfo.category === "favoriteBook"
-              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)): [])
-              : modalInfo.category === "ownedBooks" && modalInfo.action === "Delete"
-              ? (userToShow.ownedBooks ? userToShow.ownedBooks.map((book) => findName(book, books)): [])
-              : modalInfo.category === "ownedBooks" && modalInfo.action === "Add" 
-              ? books.map((book) => book.name)
-              : modalInfo.category === "friends" && modalInfo.action === "Delete"
-              ? userToShow.friends
-              : modalInfo.category === "friends" && modalInfo.action === "Add"
-              ? users
-                  .filter(user => userToShow.friends ? user.id !== userId && !userToShow.friends.includes(`${user.userName} ${user.userLastName}`):null)
-                  .map(user => `${user.userName} ${user.userLastName}`)
-              : modalInfo.category === "favoriteGenres" && modalInfo.action === "Delete"
-              ? (userToShow.favoriteGenres ? userToShow.favoriteGenres.map((genre) => findName(genre, genres)): [])
-              : modalInfo.category === "favoriteGenres" && modalInfo.action === "Add"
-              ? genres.map((genre) => genre.name)
-              : []
-          }
-          onSubmit={(selectedValue, category, action) => {
-            console.log("Selected value: ", selectedValue);
-            // Handle form submission based on the category (ownedBooks, favoriteBook, etc.)
-            if (category === 'ownedBooks') {
-              // Logic for handling ownedBooks category
-              const bookId = findId(selectedValue, books);
-              handleUpdate(category, action, bookId);
-            } else if (category === 'favoriteBook') {
-              // Logic for handling favoriteBook category
-              handleUpdate(category, action, selectedValue);
-            } else if (category === 'friends') {
-              // Logic for handling other categories
-              const friendId = users.find((user) => `${user.userName} ${user.userLastName}` === selectedValue)?.id;
-              friendId ? handleUpdate(category, action, friendId): null;
-            } else if (category === 'favoriteGenres') {
-              // Logic for handling other categories
-              const genreId = findId(selectedValue, genres);
-              handleUpdate(category, action, genreId);
-            }
-          }}
-        />
-      )}
-
-
-      {/* Delete User button */}
+      {/* Delete Book button */}
       <div className="flex justify-center">
         <button
           type="button"
           onClick={() => {
-            const confirmDelete = window.confirm("Do you really want to delete the user?");
+            const confirmDelete = window.confirm("Do you really want to delete this book ?");
             if (confirmDelete) {
-              handleDeleteUser();
+              handleDeleteBook();
             }
           }}
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
         >
-          Delete User
+          Delete book
         </button>
       </div>
     </div>

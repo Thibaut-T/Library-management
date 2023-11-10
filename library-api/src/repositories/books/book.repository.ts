@@ -27,12 +27,12 @@ export class BookRepository extends Repository<Book> {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(userId: string): Promise<PlainBookRepositoryOutput[]> {
+  public async getAllPlain(userId: string): Promise<BookRepositoryOutput[]> {
     const books = await this.find({
       relations: { bookGenres: { genre: true }, author: true, owners: true},
     });
     if (userId === "none"){
-      return books.map(adaptBookEntityToPlainBookModel);
+      return books.map(adaptBookEntityToBookModel);
     }
     const filteredBooks = books.filter((book) => {
 
@@ -41,7 +41,7 @@ export class BookRepository extends Repository<Book> {
       return ownersWithUserId.length > 0; 
     });
     
-    return filteredBooks.map(adaptBookEntityToPlainBookModel);
+    return filteredBooks.map(adaptBookEntityToBookModel);
   }
 
   /**

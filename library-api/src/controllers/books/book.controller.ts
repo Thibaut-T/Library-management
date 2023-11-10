@@ -11,15 +11,16 @@ import { BookUseCases } from 'library-api/src/useCases';
 export class BookController {
   constructor(private readonly bookUseCases: BookUseCases) {}
 
-  @Get('/user/:userId')
-  public async getAll(@Param('userId') userId: string): Promise<PlainBookPresenter[]> {
+  @Get('/:userId')
+  public async getAll(@Param('userId') userId: string): Promise<BookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain(userId);
-    return books.map(PlainBookPresenter.from);
+    const booksToSend = books.map(BookPresenter.from);
+    return booksToSend;
   }
 
-  @Get('/:id')
+  @Get('/user/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
-    console.log("book id received: ", id);
+    //console.log("book id received: ", id);
     const book = await this.bookUseCases.getById(id);
     return BookPresenter.from(book);
   }
